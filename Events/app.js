@@ -2,7 +2,7 @@ require("dotenv").config();
 require("./src/db/mongoConnect").connect();
 const express = require("express");
 
-const accountRoute = require("./src/routes/accountRoutes");
+const eventsRoute = require("./src/routes/eventsRoutes");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -12,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: "application/json" }));
 
-app.use("/", accountRoute);
+app.use("/", eventsRoute);
 
 //Get port in .env file
 const { API_PORT } = process.env;
