@@ -1,14 +1,9 @@
-function generateSenderEmail(
-  username,
-  amount,
-  senderAccountId,
-  receiverAccountId
-) {
+function generatePaymentEmail(firstname, lastname, amount, senderAccountId, receiverAccountId) {
   return `<!DOCTYPE html>
   <html>
   <head>
     <meta charset="UTF-8">
-    <title>Banking</title>
+    <title>Payment Confirmation</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -23,25 +18,17 @@ function generateSenderEmail(
         color: #666666;
         font-size: 16px;
       }
-      a {
-        color: #ffffff;
-        background-color: #007bff;
-        border-radius: 5px;
-        padding: 10px 20px;
-        text-decoration: none;
-      }
-      a:hover {
-        background-color: #0099ff;
-      }
       .username {
         color: #007bff;
       }
     </style>
   </head>
   <body>
-    <h1>Transfer email</h1>
-    <p>Bonjour <span class="username">${username}</span></p>
-    <p>Le montant de ${amount} € à bien été transferé du compte ${senderAccountId} vers ${receiverAccountId}</p><br/>
+    <h1>Payment Confirmation</h1>
+    <p>Hello <span class="username">${firstname} ${lastname}</span>,</p>
+    <p>Your payment of ${amount} € for tickets has been successfully processed.</p>
+    <p>The amount has been debited from your account (${senderAccountId}) and credited to the receiver's account (${receiverAccountId}).</p>
+    <p>Thank you for your purchase!</p>
   </body>
   </html>`;
 }
@@ -54,7 +41,7 @@ const emailConfig = {
     pass: "5&g9G5u6:#dZDdC6sY{",
   },
   getHtml: (username, amount, senderAccountId, receiverAccountId) =>
-    generateSenderEmail(username, amount, senderAccountId, receiverAccountId),
+  generatePaymentEmail(firstname, lastname, amount, senderAccountId, receiverAccountId)
 };
 
 module.exports = emailConfig;
