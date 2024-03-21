@@ -5,32 +5,8 @@ const userSchema = new mongoose.Schema({
   firstname: { type: String, required: true, trim: true },
   lastname: { type: String, required: true, trim: true },
   email: { type: String, required: true, unique: true },
-  phone: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (v) {
-        return /^(0)[1-9]([-. ]?[0-9]{2}){4}$/.test(v);
-      },
-      message: (props) =>
-        `${props.value} is not a valid phone number! Please enter a valid phone number.`,
-    },
-  },
-  password: {
-    type: String,
-    required: true,
-    validate: {
-      validator: function (v) {
-        // 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-          v
-        );
-      },
-      message: (props) =>
-        `${props.value} is not a valid password. Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.`,
-    },
-  },
-  role: { type: String, required: true, default: "user" },
+  phone: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
 });
 
 // Compare password

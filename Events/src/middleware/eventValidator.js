@@ -33,12 +33,9 @@ const eventValidationSchema = Joi.object({
     "any.required": "Ticket price is required.",
     "number.min": "Ticket price must be a positive number or zero.",
   }),
-  maxCapacity: Joi.number().required().min(1).messages({
+  capacity: Joi.number().required().min(1).messages({
     "any.required": "Max capacity is required.",
     "number.min": "Max capacity must be at least 1.",
-  }),
-  currentCapacity: Joi.number().min(0).messages({
-    "number.min": "Current capacity must be a positive number or zero.",
   }),
   isCancelled: Joi.boolean(),
   performers: Joi.array().items(Joi.string().required()).min(1).messages({
