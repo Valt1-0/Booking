@@ -1,10 +1,11 @@
 const Event = require("../models/eventModel");
 
 exports.getEvent = async (req, res, next) => {
-  const { eventId } = req.query;
+  const { eventId } = req.params;
 
   try {
     const event = await Event.findById(eventId);
+
     if (!event) {
       return res.status(404).send("No event found with this ID!");
     }
@@ -48,7 +49,7 @@ exports.createEvent = async (req, res, next) => {
 };
 
 exports.updateEvent = async (req, res, next) => {
-  const { eventId } = req.query;
+  const { eventId } = req.params;
   const eventData = req.body;
 
   try {
@@ -71,7 +72,7 @@ exports.updateEvent = async (req, res, next) => {
 };
 
 exports.deleteEvent = async (req, res, next) => {
-  const { eventId } = req.query;
+  const { eventId } = req.params;
 
   try {
     const deletedEvent = await Event.findByIdAndDelete(eventId);

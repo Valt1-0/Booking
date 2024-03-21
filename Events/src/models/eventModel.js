@@ -13,6 +13,8 @@ const eventSchema = new mongoose.Schema({
   currentCapacity: { type: Number, default: 0 }, // Capacité actuelle, initialement à zéro
   isCancelled: { type: Boolean, default: false }, // Indicateur si l'événement est annulé
   performers: [{ type: String }], // Liste des artistes / interprètes participants
+  createdAt: { type: Date, default: Date.now },
+  updatedAt: { type: Date, default: Date.now },
 });
 
 module.exports = mongoose.model("Event", eventSchema);
