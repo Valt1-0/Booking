@@ -12,8 +12,11 @@ exports.getEvent = async (req, res, next) => {
     res.status(200).json(event);
   } catch (error) {
     console.error("Error fetching event:", error);
-    res.status(500).json({ message: "An error occurred while fetching the event." });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching the event." });
   }
+  return next();
 };
 
 exports.getAllEvents = async (req, res, next) => {
@@ -22,8 +25,11 @@ exports.getAllEvents = async (req, res, next) => {
     res.status(200).json(events);
   } catch (error) {
     console.error("Error fetching events:", error);
-    res.status(500).json({ message: "An error occurred while fetching events." });
+    res
+      .status(500)
+      .json({ message: "An error occurred while fetching events." });
   }
+  return next();
 };
 
 exports.createEvent = async (req, res, next) => {
@@ -34,8 +40,11 @@ exports.createEvent = async (req, res, next) => {
     res.status(200).json(event);
   } catch (error) {
     console.error("Error creating event:", error);
-    res.status(500).json({ message: "An error occurred while creating the event." });
+    res
+      .status(500)
+      .json({ message: "An error occurred while creating the event." });
   }
+  return next();
 };
 
 exports.updateEvent = async (req, res, next) => {
@@ -43,7 +52,9 @@ exports.updateEvent = async (req, res, next) => {
   const eventData = req.body;
 
   try {
-    const updatedEvent = await Event.findByIdAndUpdate(eventId, eventData, { new: true });
+    const updatedEvent = await Event.findByIdAndUpdate(eventId, eventData, {
+      new: true,
+    });
 
     if (!updatedEvent) {
       return res.status(404).send("No event found with this ID!");
@@ -52,8 +63,11 @@ exports.updateEvent = async (req, res, next) => {
     res.status(200).json(updatedEvent);
   } catch (error) {
     console.error("Error updating event:", error);
-    res.status(500).json({ message: "An error occurred while updating the event." });
+    res
+      .status(500)
+      .json({ message: "An error occurred while updating the event." });
   }
+  return next();
 };
 
 exports.deleteEvent = async (req, res, next) => {
@@ -69,6 +83,9 @@ exports.deleteEvent = async (req, res, next) => {
     res.status(200).send("Event has been deleted successfully!");
   } catch (error) {
     console.error("Error deleting event:", error);
-    res.status(500).json({ message: "An error occurred while deleting the event." });
+    res
+      .status(500)
+      .json({ message: "An error occurred while deleting the event." });
   }
+  return next();
 };

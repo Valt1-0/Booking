@@ -2,7 +2,7 @@ require("dotenv").config();
 require("./src/db/mongoConnect").connect();
 const express = require("express");
 
-const eventsRoute = require("./src/routes/eventsRoutes");
+const eventsRoute = require("./src/routes/eventRoutes");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
