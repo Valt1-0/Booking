@@ -1,4 +1,11 @@
-<!DOCTYPE html>
+function generatePaymentEmail(
+  firstname,
+  lastname,
+  totalPrice,
+  ticketIds,
+  ticketQuantity
+) {
+  return `<!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
@@ -103,4 +110,7 @@
         </div>
       </div>
     </body>
-  </html>
+  </html>`;
+}
+
+generatePaymentEmail("John", "Doe", 100, "123456789", "987654321");
