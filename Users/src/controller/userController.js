@@ -43,7 +43,14 @@ exports.registerUser = async (req, res, next) => {
       lastname,
       email,
       phone,
-      password,
+    });
+
+    fetch("http://localhost:3003/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ userId: user._id, email, password,role:"user" }),
     });
 
     res.status(200).json(user);
