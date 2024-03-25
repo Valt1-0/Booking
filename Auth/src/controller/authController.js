@@ -1,5 +1,6 @@
-const Auth = require("../models/authModel");
+const Auth = require("../db/models/authModel");
 const utils = require('../utils');
+
 exports.createAuth = async (req, res) => {
   const { userId,email, role="user", password } = req.body;
   try {
@@ -66,4 +67,12 @@ exports.loginUser = async (req, res, next) => {
     res.status(500).send("Internal server error!");
   }
 };
+
+  exports.SubscribeEvents = async (payload) => {
+    payload = JSON.parse(payload);
+
+    const { event, data } = payload;
+
+    console.log(event, data);
+  };
 

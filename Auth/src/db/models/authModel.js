@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const Schema = mongoose.Schema;
-const utils = require("../utils");
+const utils = require("../../utils");
 const authSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: {

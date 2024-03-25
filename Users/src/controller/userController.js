@@ -1,5 +1,4 @@
-const User = require("../models/userModel");
-
+const User = require("../db/models/userModel");
 // Récupérer tous les utilisateurs
 exports.getAllUsers = async (req, res, next) => {
   try {
@@ -97,3 +96,11 @@ exports.deleteUser = async (req, res, next) => {
     res.status(500).send("An error occurred while deleting the user.");
   }
 };
+
+  exports.SubscribeEvents = async (payload) => {
+    payload = JSON.parse(payload);
+
+    const { event, data } = payload;
+
+    console.log(event, data);
+  };
