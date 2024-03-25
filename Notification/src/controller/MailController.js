@@ -1,9 +1,10 @@
 const emailConfig = require("../../config/MailConfig");
 const nodemailer = require('nodemailer');
+const mailTemplate = require('../../assets/templates/mails')
+const {FormateData } = require('../utils');
 
 exports.sendMail = (req, res) => {
-  const { email, username, amount, senderAccountId, receiverAccountId } =
-    req.body;
+  const { email, firstname,lastname, typeOfMail} = req.body;
   let transporter = nodemailer.createTransport({
     host: emailConfig.host,
     port: emailConfig.port,
@@ -13,16 +14,24 @@ exports.sendMail = (req, res) => {
     },
   });
 
+  let html;
+let subject;
+  switch (typeOfMail) {
+  case 'userCreated' :
+    html = mailTemplate.userCreated(firstname, lastname);
+    subject = 'Account created';
+    break;
+  }
+ if (subject === undefined || html === undefined) {
+    console.error('Type de mail non reconnu');
+    return FormateData({msg: 'type of mail not recognized'}, 400);
+  }
+
   let mailOptions = {
     from: "no-reply@iseevision.fr",
     to: email,
-    subject: "Banking Email confirmation",
-    html: emailConfig.getHtml(
-      username,
-      amount,
-      senderAccountId,
-      receiverAccountId
-    ),
+    subject: subject,
+    html: html,
   };
 
   transporter.sendMail(mailOptions, (error, info) => {

@@ -21,7 +21,7 @@ module.exports = async (app) => {
   app.post("/register", async (req, res) => {
     const user = await service.registerUser(req.body);
     const payload = { data: {
-      fistname: req.body?.firstname,
+      firstname: req.body?.firstname,
       lastname: req.body?.lastname,
       userId: user.data?._id,
       email: req.body?.email,

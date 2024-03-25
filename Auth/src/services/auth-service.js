@@ -1,7 +1,12 @@
-const utils = require("../utils");
+const { FormateData,PublishMessage } = require("../utils");
 const Auth = require("../db/models/authModel");
+const { NOTIFICATION_SERVICE } = require("../config");
 
 class AuthService {
+  constructor(channel)
+  {
+    this.channel = channel;
+  }
   createAuth = async (authInputs) => {
     const {
       userId,
@@ -15,7 +20,7 @@ class AuthService {
     try {
       const isNewUserAuth = await Auth.findOne({ userId: userId });
       if (isNewUserAuth)
-        return utils.FormateData({
+        return FormateData({
           msg: "User already exists. Please log in.",
           statusCode: 409,
         });
@@ -31,10 +36,10 @@ class AuthService {
 
       await newAuth.save();
 
-      return utils.FormateData({ data: newAuth });
+      return FormateData({ data: newAuth });
     } catch (err) {
       console.error("Error while saving the Auth document:", err);
-      return utils.FormateData({
+      return FormateData({
         msg: "Internal Server Error",
         statusCode: 500,
       });
@@ -48,24 +53,24 @@ class AuthService {
       const user = await Auth.findOne({ email });
 
       if (!user)
-        return utils.FormateData({
+        return FormateData({
           msg: "No account exists with this email !",
           statusCode: 404,
         });
 
-      const validPassword = await utils.ValidatePassword(
+      const validPassword = await ValidatePassword(
         password,
         user.password,
         user.salt
       );
 
       if (!validPassword)
-        return utils.FormateData({
+        return FormateData({
           msg: "Email/password does not match",
           statusCode: 401,
         });
 
-      const token = await utils.GenerateSignature({
+      const token = await GenerateSignature({
         email: user.email,
         userId: user.userId,
         role: user.role,
@@ -84,14 +89,14 @@ class AuthService {
       //   res.setHeader("Authorization", `Bearer ${token}`);
 
       //   res.status(200).json({ user: userInfo, token });
-      return utils.FormateData({
+      return FormateData({
         data: userInfo,
         token: token,
         statusCode: 200,
       });
     } catch (error) {
       console.error("Error in loginUser:", error);
-      return utils.FormateData({
+      return FormateData({
         msg: "Internal server error",
         statusCode: 500,
       });
@@ -106,6 +111,21 @@ class AuthService {
     switch (event) {
       case "CREATE_AUTH":
         this.createAuth(data);
+        const payloadNotification = {
+          data: {
+            firstname: data.firstname,
+            lastname: data.lastname,
+            email: data.email,
+            typeOfMail: "userCreated",
+          },
+          event: "CREATE_USER"
+        };
+        //Send a notification to the notification service
+        PublishMessage(
+          this.channel,
+          NOTIFICATION_SERVICE,
+          JSON.stringify(payloadNotification)
+        );
         break;
       default:
         break;

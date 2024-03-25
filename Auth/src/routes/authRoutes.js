@@ -4,9 +4,9 @@ const AuthService = require("../services/auth-service");
 const { createAuth, loginUser } = require("../controller/authController");
 
 module.exports = async (app) => {
-  const service = new AuthService();
-
   const channel = await CreateChannel();
+  const service = new AuthService(channel);
+
   SubscribeMessage(channel, service);
 
   app.post("/", async (req, res) => {
