@@ -67,11 +67,11 @@ class UserService {
   };
 
   updateUser = async (userInputs) => {
-    const { firstname, lastname, email, phone } = userInputs;
+    const { firstname, lastname, email, phone, userId } = userInputs;
 
     try {
       const updatedUser = await User.findByIdAndUpdate(
-        req.query.id,
+        {_id: userId},
         { firstname, lastname, email, phone },
         { new: true }
       );

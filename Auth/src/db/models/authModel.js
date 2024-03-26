@@ -25,19 +25,36 @@ const authSchema = new mongoose.Schema({
 
 authSchema.pre("save", async function (next) {
   try {
-
     if (!this.isModified("password")) {
       return next();
     }
-    
+
     const salt = await utils.GenerateSalt();
     const password = await utils.GeneratePassword(this.password, salt);
     this.salt = salt;
     this.password = password;
     next();
-
-  }catch(error){
+  } catch (error) {
     console.error("Error in authSchema.pre save:", error);
+    next(error);
+  }
+});
+
+authSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate().$set
+    ? this.getUpdate().$set
+    : this.getUpdate();
+  if (!update.password) {
+    return next();
+  }
+  try {
+    const salt = await utils.GenerateSalt();
+    const hashedPassword = await utils.GeneratePassword(update.password, salt);
+    update.salt = salt;
+    update.password = hashedPassword;
+    next();
+  } catch (error) {
+    console.error("Error in authSchema.pre findOneAndUpdate:", error);
     next(error);
   }
 });
