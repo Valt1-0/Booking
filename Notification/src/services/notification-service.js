@@ -18,12 +18,18 @@ class NotificationService {
     let html;
     let subject;
     switch (typeOfMail) {
-      case "userCreated":
+      case "CREATE_USER":
         html = mailTemplate.userCreated.generateCreatedUserEmail(
           firstname,
           lastname
         );
         subject = "Account created";
+      case "UPDATE_USER":
+        html = mailTemplate.userUpdated.generateCreatedUserEmail(
+          firstname,
+          lastname
+        );
+         subject = "Account Updated";
         break;
     }
     if (subject === undefined || html === undefined) {
@@ -55,9 +61,12 @@ class NotificationService {
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);
     const { event, data } = payload;
-
-    switch (event) {
+    data.typeOfMail = event;
+    switch (event) {   
       case "CREATE_USER":
+        this.sendMail(data);
+        break;
+    case 'UPDATE_USER':
         this.sendMail(data);
         break;
       default:

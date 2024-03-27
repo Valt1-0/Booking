@@ -20,23 +20,45 @@ module.exports = async (app) => {
   // router.post("/login", loginUser);
   app.post("/register", validateUser, async (req, res) => {
     const user = await service.registerUser(req.body);
-    const payload = {
-      data: {
-        firstname: req.body?.firstname,
-        lastname: req.body?.lastname,
-        userId: user.data?._id,
-        email: req.body?.email,
-        password: req.body?.password,
-        role: "user",
-      },
-      event: "CREATE_AUTH",
-    };
-    PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
+    if (user.statusCode >= 200 && user.statusCode < 300) {
+      const payload = {
+        data: {
+          firstname: req.body?.firstname,
+          lastname: req.body?.lastname,
+          userId: user.data?._id,
+          email: req.body?.email,
+          password: req.body?.password,
+          role: "user",
+        },
+        event: "CREATE_USER",
+      };
+      PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
+    }
     res.status(user.statusCode).json({ userInfo: user.data });
   });
 
   app.put("/:userId", async (req, res) => {
-    const user = await service.updateUser(req.body);
+    const userInput = {
+      ...req.body,
+      userId: req.params.userId,
+    };
+    
+    const user = await service.updateUser(userInput);
+    if (user.statusCode >= 200 && user.statusCode < 300) {
+      const payload = {
+        data: {
+          firstname: req.body?.firstname,
+          lastname: req.body?.lastname,
+          userId: user.data?._id,
+          email: req.body?.email,
+          password: req.body?.password,
+          role: req.body?.role,
+        },
+        event: "UPDATE_USER",
+      };
+
+      PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
+    }
     res.status(user.statusCode).json(user.data);
   });
   app.delete("/:userId", async (req, res) => {

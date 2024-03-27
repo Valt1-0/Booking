@@ -1,10 +1,14 @@
-const { FormateData,PublishMessage } = require("../utils");
+const {
+  FormateData,
+  PublishMessage,
+  ValidatePassword,
+  GenerateSignature,
+} = require("../utils");
 const Auth = require("../db/models/authModel");
 const { NOTIFICATION_SERVICE } = require("../config");
 
 class AuthService {
-  constructor(channel)
-  {
+  constructor(channel) {
     this.channel = channel;
   }
   createAuth = async (authInputs) => {
@@ -35,6 +39,20 @@ class AuthService {
       });
 
       await newAuth.save();
+
+      //Send a notification to the notification service
+      PublishMessage(
+        this.channel,
+        NOTIFICATION_SERVICE,
+        JSON.stringify({
+          data: {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+          },
+          event: "CREATE_USER",
+        })
+      );
 
       return FormateData({ data: newAuth });
     } catch (err) {
@@ -103,29 +121,61 @@ class AuthService {
     }
   };
 
+  updateUser = async (authInputs) => {
+    const {
+      userId,
+      email,
+      password,
+      firstname,
+      lastname,
+      role = "user",
+    } = authInputs;
+
+    try {
+      const user = await Auth.findOne({ userId });
+
+      if (!user)
+        return FormateData({
+          msg: "No account exists with this email !",
+          statusCode: 404,
+        });
+console.log("password", password)
+      await Auth.findByIdAndUpdate(user._id, { email, password, role });
+
+      //Send a notification to the notification service
+      PublishMessage(
+        this.channel,
+        NOTIFICATION_SERVICE,
+        JSON.stringify({
+          data: {
+            firstname: firstname,
+            lastname: lastname,
+            email: email,
+          },
+          event: "UPDATE_USER",
+        })
+      );
+    } catch (error) {
+      console.error("Error in updateUser:", error);
+      return FormateData({
+        msg: "Internal server error",
+        statusCode: 500,
+      });
+    }
+  };
+
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);
 
     const { event, data } = payload;
 
     switch (event) {
-      case "CREATE_AUTH":
+      case "CREATE_USER":
         this.createAuth(data);
-        const payloadNotification = {
-          data: {
-            firstname: data.firstname,
-            lastname: data.lastname,
-            email: data.email,
-            typeOfMail: "userCreated",
-          },
-          event: "CREATE_USER"
-        };
-        //Send a notification to the notification service
-        PublishMessage(
-          this.channel,
-          NOTIFICATION_SERVICE,
-          JSON.stringify(payloadNotification)
-        );
+
+        break;
+      case "UPDATE_USER":
+        this.updateUser(data);
         break;
       default:
         break;

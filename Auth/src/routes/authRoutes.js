@@ -1,7 +1,5 @@
 const { CreateChannel, SubscribeMessage } = require("../utils");
-const authController = require("../controller/authController");
 const AuthService = require("../services/auth-service");
-const { createAuth, loginUser } = require("../controller/authController");
 const { validateAuth } = require("../middleware/authValidator");
 
 module.exports = async (app) => {
@@ -24,4 +22,5 @@ module.exports = async (app) => {
       .status(loginUser.statusCode)
       .json({ userInfo: loginUser.data, token: loginUser.otherData?.token });
   });
+
 };
