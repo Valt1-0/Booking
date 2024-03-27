@@ -1,14 +1,14 @@
 const Auth = require("../db/models/authModel");
-const utils = require('../utils');
+const utils = require("../utils");
 
 exports.createAuth = async (req, res) => {
-  const { userId,email, role="user", password } = req.body;
+  const { userId, email, role = "user", password } = req.body;
   try {
     const isNewUserAuth = await Auth.findOne({ userId: userId });
     if (isNewUserAuth)
       return res.status(409).send("User Already Exist. Please Login");
-      
-     const newAuth =  Auth({
+
+    const newAuth = Auth({
       userId: userId,
       email: email,
       role: role,
@@ -19,7 +19,7 @@ exports.createAuth = async (req, res) => {
 
     return res.status(200).json({ msg: "Auth Successfully Created" });
   } catch (err) {
-     console.error("Error while saving the Auth document:", err);
+    console.error("Error while saving the Auth document:", err);
     return res.status(500).json({ msg: err.message });
   }
 };
@@ -43,11 +43,11 @@ exports.loginUser = async (req, res, next) => {
     if (!validPassword) {
       return res.status(400).send("Email/password does not match!");
     }
-   const token = await utils.GenerateSignature({
-     email: user.email,
-     userId: user.userId,
-     role: user.role,
-   });
+    const token = await utils.GenerateSignature({
+      email: user.email,
+      userId: user.userId,
+      role: user.role,
+    });
 
     const userInfo = {
       id: user.userId,
@@ -68,11 +68,10 @@ exports.loginUser = async (req, res, next) => {
   }
 };
 
-  exports.SubscribeEvents = async (payload) => {
-    payload = JSON.parse(payload);
+exports.SubscribeEvents = async (payload) => {
+  payload = JSON.parse(payload);
 
-    const { event, data } = payload;
+  const { event, data } = payload;
 
-    console.log(event, data);
-  };
-
+  console.log(event, data);
+};

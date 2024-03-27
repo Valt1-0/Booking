@@ -1,7 +1,7 @@
 const { AUTH_SERVICE } = require("../config");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 const UserService = require("../services/user-service");
-
+const { validateUser } = require("../middleware/userValidation");
 module.exports = async (app) => {
   const service = new UserService();
   const channel = await CreateChannel();
@@ -18,26 +18,28 @@ module.exports = async (app) => {
     res.status(user.statusCode).json({ userInfo: user.data });
   });
   // router.post("/login", loginUser);
-  app.post("/register", async (req, res) => {
+  app.post("/register", validateUser, async (req, res) => {
     const user = await service.registerUser(req.body);
-    const payload = { data: {
-      firstname: req.body?.firstname,
-      lastname: req.body?.lastname,
-      userId: user.data?._id,
-      email: req.body?.email,
-      password: req.body?.password,
-      role: "user",
-    }, event: "CREATE_AUTH" };
+    const payload = {
+      data: {
+        firstname: req.body?.firstname,
+        lastname: req.body?.lastname,
+        userId: user.data?._id,
+        email: req.body?.email,
+        password: req.body?.password,
+        role: "user",
+      },
+      event: "CREATE_AUTH",
+    };
     PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
-    res.status(user.statusCode).json({userInfo : user.data});
+    res.status(user.statusCode).json({ userInfo: user.data });
   });
 
-
-  app.put("/:userId",  async (req, res) => { 
+  app.put("/:userId", async (req, res) => {
     const user = await service.updateUser(req.body);
     res.status(user.statusCode).json(user.data);
-  } );
-  app.delete("/:userId", async (req, res) => { 
+  });
+  app.delete("/:userId", async (req, res) => {
     const user = await service.deleteUser(req.body);
     res.status(user.statusCode).json(user.data);
   });
