@@ -42,7 +42,7 @@ module.exports = async (app) => {
       ...req.body,
       userId: req.params.userId,
     };
-    
+
     const user = await service.updateUser(userInput);
     if (user.statusCode >= 200 && user.statusCode < 300) {
       const payload = {
@@ -72,7 +72,6 @@ module.exports = async (app) => {
     res.status(user.statusCode).json(user.data);
   });
 };
-
 
 //const router = express.Router();
 

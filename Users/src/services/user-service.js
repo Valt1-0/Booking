@@ -71,7 +71,7 @@ class UserService {
 
     try {
       const updatedUser = await User.findByIdAndUpdate(
-        {_id: userId},
+        { _id: userId },
         { firstname, lastname, email, phone },
         { new: true }
       );
@@ -87,20 +87,26 @@ class UserService {
   };
 
   deleteUser = async (userInputs) => {
-    const { email, user, token,userId } = userInputs;
+    const { email, user, token, userId } = userInputs;
 
     if (!userId)
       return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
 
     try {
-
       const user = await User.findById(userId);
 
-      if(!user) return FormateData({ msg: "No user exists with this ID !", statusCode: 404 });
+      if (!user)
+        return FormateData({
+          msg: "No user exists with this ID !",
+          statusCode: 404,
+        });
 
-      if(user.id !== user._id && user.role !== "admin")  
-      return FormateData({ msg: "You are not authorized to delete this user", statusCode: 401 });
-      
+      if (user.id !== user._id && user.role !== "admin")
+        return FormateData({
+          msg: "You are not authorized to delete this user",
+          statusCode: 401,
+        });
+
       const deletedUser = await User.findOneAndDelete({ email });
 
       if (!deletedUser)
