@@ -1,5 +1,5 @@
 const express = require("express");
-const TicketService = require("../services/ticket-service");
+const TicketService = require("../services/ticket-services");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 
 const router = express.Router();
