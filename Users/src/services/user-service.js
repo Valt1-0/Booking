@@ -47,18 +47,6 @@ class UserService {
         phone,
       });
 
-      //   fetch("http://localhost:3003/", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //     },
-      //     body: JSON.stringify({
-      //       userId: user._id,
-      //       email,
-      //       password,
-      //       role: "user",
-      //     }),
-      //   });
       return FormateData({ data: user });
     } catch (error) {
       console.error("Error in registerUser:", error);
