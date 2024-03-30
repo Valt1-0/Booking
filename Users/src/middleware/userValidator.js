@@ -21,15 +21,24 @@ const eventValidationSchema = Joi.object({
     "string.empty": "Phone number is required.",
     "any.required": "Phone number is required.",
   }),
+  password: Joi.string()
+    .pattern(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    )
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one digit, and one special character.",
+      "any.required": "Password is required.",
+    }),
 });
 
 // Fonction pour valider un événement
 const validateUser = (req, res, next) => {
-  req.body.performers = JSON.parse(req.body.performers);
 
   const { error } = eventValidationSchema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error });
   }
   next();
 };

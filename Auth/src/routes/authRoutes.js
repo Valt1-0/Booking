@@ -8,12 +8,12 @@ module.exports = async (app) => {
 
   SubscribeMessage(channel, service);
 
-  app.post("/", validateAuth ,async (req, res) => {
+  app.post("/" ,async (req, res) => {
     const createAuth = await service.createAuth(req.body);
     res.status(createAuth.statusCode).json(createAuth.data);
   });
 
-  app.post("/login", validateAuth, async (req, res) => {
+  app.post("/login", async (req, res) => {
     const loginUser = await service.loginUser(req.body);
     res.removeHeader("Authorization");
     // Ajouter le token dans l'en-tête de la réponse

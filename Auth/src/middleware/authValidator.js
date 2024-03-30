@@ -22,17 +22,14 @@ const authValidationSchema = Joi.object({
   role: Joi.string().valid("user", "admin").required().messages({
     "any.only": 'Role must be either "user" or "admin".',
     "any.required": "Role is required.",
-  }),
-  userId: Joi.string().required().messages({
-    "any.required": "User ID is required.",
-  }),
+  })
 });
 
 // Fonction pour valider un événement
 const validateAuth = (req, res, next) => {
   const { error } = authValidationSchema.validate(req.body);
   if (error) {
-    return res.status(400).json({ message: error.message });
+    return res.status(400).json({ message: error });
   }
   next();
 };

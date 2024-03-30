@@ -90,7 +90,7 @@ class AuthService {
 
       const token = await GenerateSignature({
         email: user.email,
-        userId: user.userId,
+        id: user.userId,
         role: user.role,
       });
 
@@ -157,8 +157,9 @@ class AuthService {
     }
   };
 
-  deleteUser = async (userId) => { 
+  deleteUser = async (authInputs) => {
     try {
+      const { userId } = authInputs;
       const user = await Auth.findOne({ userId });
 
       if (!user)
@@ -179,7 +180,6 @@ class AuthService {
         statusCode: 500,
       });
     }
-
   };
 
   SubscribeEvents = async (payload) => {

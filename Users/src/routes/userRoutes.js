@@ -2,10 +2,11 @@ const { AUTH_SERVICE } = require("../config");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 const UserService = require("../services/user-service");
 const { validateUser } = require("../middleware/userValidator");
+const {isAuth} = require('../middleware/auth');
 module.exports = async (app) => {
   const service = new UserService();
   const channel = await CreateChannel();
-
+  
   app.get("/", async (req, res) => {
     const allUser = await service.getAllUsers();
     res.status(allUser.statusCode).json(allUser.data);
@@ -61,7 +62,8 @@ module.exports = async (app) => {
     }
     res.status(user.statusCode).json(user.data);
   });
-  app.delete("/:userId", async (req, res) => {
+  app.delete("/:userId",isAuth, async (req, res) => {
+    console.log("delete user", req.user);
     const userInput = {
       ...req.body,
       userId: req.params.userId,
@@ -69,6 +71,21 @@ module.exports = async (app) => {
       token: req.headers.authorization,
     };
     const user = await service.deleteUser(userInput);
+
+
+    if (user.statusCode >= 200 && user.statusCode < 300) {
+      const payload = {
+        data: {
+          userId: user.data?._id,
+        },
+        event: "DELETE_USER",
+      };
+      PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
+      return res
+        .status(res.statusCode)
+        .json({ msg: "User deleted successfully" });
+    }
+
     res.status(user.statusCode).json(user.data);
   });
 };

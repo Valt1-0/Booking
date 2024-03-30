@@ -1,6 +1,4 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
-require("dotenv").config();
+const {ValidateSignature} = require("../utils");
 
 exports.isAuth = async (req, res, next) => {
   let token = "";
@@ -15,16 +13,11 @@ exports.isAuth = async (req, res, next) => {
       return res.status(401).send({ error: "Unauthorized access!" });
     }
 
-    const decode = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const user = await User.findById(decode.userId).select("-password -phone").lean();
-
-    if (!user) {
+    const isValidToken = await ValidateSignature(req);
+   
+    if (!isValidToken) {
       return res.status(401).send({ error: "Unauthorized access!" });
     }
-
-    user._id = user._id.toString();
-
-    req.user = user;
     return next();
   } catch (error) {
     if (error.name === "JsonWebTokenError") {
