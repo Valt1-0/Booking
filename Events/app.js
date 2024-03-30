@@ -12,7 +12,7 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: "application/json" }));
 
-app.use("/", eventRoute);
+eventRoute(app);
 
 //Get port in .env file
 const { API_PORT } = process.env;
