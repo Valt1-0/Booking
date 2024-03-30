@@ -68,7 +68,7 @@ module.exports = async (app) => {
       user: req.user,
       token: req.headers.authorization,
     };
-    const user = await service.deleteUser(req.body);
+    const user = await service.deleteUser(userInput);
     res.status(user.statusCode).json(user.data);
   });
 };
