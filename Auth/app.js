@@ -21,7 +21,7 @@ authRoute(app);
 
 // Server listening
 app.listen(PORT, () => {
-  console.log(`Server Users running on port ${PORT}`);
+  console.log(`Server Auth running on port ${PORT}`);
 });
 
 module.exports = app;

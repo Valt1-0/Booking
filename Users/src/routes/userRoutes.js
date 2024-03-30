@@ -1,7 +1,7 @@
 const { AUTH_SERVICE } = require("../config");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 const UserService = require("../services/user-service");
-const { validateUser } = require("../middleware/userValidation");
+const { validateUser } = require("../middleware/userValidator");
 module.exports = async (app) => {
   const service = new UserService();
   const channel = await CreateChannel();
