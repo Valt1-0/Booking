@@ -1,9 +1,19 @@
+const jwt = require("jsonwebtoken");
 const amqplib = require("amqplib");
-const {
-  EXCHANGE_NAME,
-  MSG_QUEUE_URL,
-  USER_SERVICE,
-} = require("../config");
+const { EXCHANGE_NAME, MSG_QUEUE_URL, USER_SERVICE,JWT_SECRET_KEY } = require("../config");
+
+module.exports.ValidateSignature = async (req) => {
+  try {
+    const signature = req.get("Authorization");
+    const payload = await jwt.verify(signature.split(" ")[1], JWT_SECRET_KEY);
+    req.user = payload;
+
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
 
 module.exports.FormateData = (data) => {
   if (!data) {
