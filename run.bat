@@ -10,7 +10,7 @@ IF "%type%" EQU "install" (
     set "command=npm run %type%"
 )
 
-IF "%type%" EQU "" (
+IF "%type%" EQU "dev" (
     set "command=npm run dev"
 )
 
