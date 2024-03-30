@@ -17,4 +17,9 @@ module.exports = async (app) => {
       .json({ userInfo: loginUser.data, token: loginUser.otherData?.token });
   });
 
+  app.delete("/", async (req, res) => {
+    const deleteUser = await service.deleteUser(req.params.userId);
+    res.removeHeader("Authorization");
+    res.status(deleteUser.statusCode).json(deleteUser);
+  });
 };

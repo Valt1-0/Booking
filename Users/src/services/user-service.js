@@ -87,16 +87,33 @@ class UserService {
   };
 
   deleteUser = async (userInputs) => {
-    const { email } = userInputs;
+    const { email, user, token,userId } = userInputs;
 
-    if (!email)
-      return FormateData({ msg: "Please provide an email.", statusCode: 400 });
+    if (!userId)
+      return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
 
     try {
+
+      const user = await User.findById(userId);
+
+      if(!user) return FormateData({ msg: "No user exists with this ID !", statusCode: 404 });
+
+      if(user.id !== user._id && user.role !== "admin")  
+      return FormateData({ msg: "You are not authorized to delete this user", statusCode: 401 });
+      
       const deletedUser = await User.findOneAndDelete({ email });
 
       if (!deletedUser)
         return FormateData({ msg: "User not found", statusCode: 404 });
+
+      fetch("http://localhost:3003/", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: "Bearer " + token,
+        },
+        body: JSON.stringify({ userId: deletedUser._id }),
+      });
 
       return FormateData({ msg: "User has been deleted successfully!" });
     } catch (error) {

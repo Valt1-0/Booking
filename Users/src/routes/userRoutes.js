@@ -62,10 +62,17 @@ module.exports = async (app) => {
     res.status(user.statusCode).json(user.data);
   });
   app.delete("/:userId", async (req, res) => {
+    const userInput = {
+      ...req.body,
+      userId: req.params.userId,
+      user: req.user,
+      token: req.headers.authorization,
+    };
     const user = await service.deleteUser(req.body);
     res.status(user.statusCode).json(user.data);
   });
 };
+
 
 //const router = express.Router();
 

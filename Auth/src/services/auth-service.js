@@ -101,12 +101,6 @@ class AuthService {
         role: user.role,
       };
 
-      // Supprimer le token précédent de l'en-tête de la réponse s'il existe
-      //   res.removeHeader("Authorization");
-      //   // Ajouter le token dans l'en-tête de la réponse
-      //   res.setHeader("Authorization", `Bearer ${token}`);
-
-      //   res.status(200).json({ user: userInfo, token });
       return FormateData({
         data: userInfo,
         token: token,
@@ -139,7 +133,6 @@ class AuthService {
           msg: "No account exists with this email !",
           statusCode: 404,
         });
-console.log("password", password)
       await Auth.findByIdAndUpdate(user._id, { email, password, role });
 
       //Send a notification to the notification service
@@ -164,6 +157,31 @@ console.log("password", password)
     }
   };
 
+  deleteUser = async (userId) => { 
+    try {
+      const user = await Auth.findOne({ userId });
+
+      if (!user)
+        return FormateData({
+          msg: "No account exists with this email !",
+          statusCode: 404,
+        });
+
+      await Auth.findByIdAndDelete(user._id);
+      return FormateData({
+        msg: "User deleted successfully",
+        statusCode: 200,
+      });
+    } catch (error) {
+      console.error("Error in deleteUser:", error);
+      return FormateData({
+        msg: "Internal server error",
+        statusCode: 500,
+      });
+    }
+
+  };
+
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);
 
@@ -172,10 +190,12 @@ console.log("password", password)
     switch (event) {
       case "CREATE_USER":
         this.createAuth(data);
-
         break;
       case "UPDATE_USER":
         this.updateUser(data);
+        break;
+      case "DELETE_USER":
+        this.deleteUser(data);
         break;
       default:
         break;
