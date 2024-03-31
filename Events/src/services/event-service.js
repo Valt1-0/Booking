@@ -111,17 +111,53 @@ class EventService {
     }
   };
 
+  verificationPurchaseEvent = async (eventInputs) => {
+    const { eventId, quantity } = eventInputs;
+
+    try {
+      const event = await Event.findById(eventId);
+
+      if (!event)
+        return FormateData({
+          msg: "No event found with this ID!",
+          statusCode: 404,
+        });
+
+      if (event.capacity < quantity)
+        return FormateData({
+          msg: "The number of tickets requested exceeds the capacity of the event.",
+          statusCode: 400,
+        });
+
+      return FormateData({
+        data: {
+          event,
+          totalAmount: event.ticketPrice * quantity,
+        },
+        statusCode: 200,
+      });
+    } catch (error) {
+      console.error("Error durinnnnng verificationPurchaseEvent:", error);
+      return FormateData({
+        msg: "An error occurred while verifying the purchase of the event.",
+        statusCode: 500,
+      });
+    }
+  };
+
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);
 
     const { event, data } = payload;
 
     switch (event) {
+      case "VERIFIED":
+        this.verificationPurchaseEvent(data);
+        break;
       default:
         break;
     }
   };
-
 }
 
 module.exports = EventService;
