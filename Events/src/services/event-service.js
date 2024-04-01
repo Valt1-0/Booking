@@ -137,7 +137,7 @@ class EventService {
         statusCode: 200,
       });
     } catch (error) {
-      console.error("Error durinnnnng verificationPurchaseEvent:", error);
+      console.error("Error during verificationPurchaseEvent:", error);
       return FormateData({
         msg: "An error occurred while verifying the purchase of the event.",
         statusCode: 500,

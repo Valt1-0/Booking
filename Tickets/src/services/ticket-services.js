@@ -1,11 +1,7 @@
 const {
-  FormateData,
-  PublishMessage,
-  ValidatePassword,
-  GenerateSignature,
+  FormateData
 } = require("../utils");
 const Ticket = require("../db/models/ticketModel");
-const { NOTIFICATION_SERVICE } = require("../config");
 
 class TicketService {
   constructor(channel) {

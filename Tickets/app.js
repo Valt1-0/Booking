@@ -1,6 +1,7 @@
 require("dotenv").config();
 require("./src/db/mongoConnect").connect();
 const express = require("express");
+const { PORT } = require("./src/config/");
 
 const ticketRoute = require("./src/routes/ticketRoutes");
 
@@ -12,14 +13,12 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ type: "application/json" }));
 
-app.use("/", ticketRoute);
+ticketRoute(app);
 
-//Get port in .env file
-const { API_PORT } = process.env;
 
 // Server listening
-app.listen(API_PORT, () => {
-  console.log(`Server Users running on port ${API_PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server Users running on port ${PORT}`);
 });
 
 

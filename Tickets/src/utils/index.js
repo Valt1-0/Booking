@@ -1,9 +1,5 @@
 const amqplib = require("amqplib");
-const {
-  EXCHANGE_NAME,
-  MSG_QUEUE_URL,
-  USER_SERVICE,
-} = require("../config");
+const { EXCHANGE_NAME, MSG_QUEUE_URL, TICKET_SERVICE } = require("../config");
 
 module.exports.FormateData = (data) => {
   if (!data) {
@@ -47,13 +43,13 @@ module.exports.PublishMessage = (channel, service, msg) => {
 
 module.exports.SubscribeMessage = async (channel, service) => {
   await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
-  const q = await channel.assertQueue(USER_SERVICE, {
+  const q = await channel.assertQueue(TICKET_SERVICE, {
     exclusive: true,
     durable: true,
   });
   console.log(` Waiting for messages in queue: ${q.queue}`);
 
-  channel.bindQueue(q.queue, EXCHANGE_NAME, USER_SERVICE);
+  channel.bindQueue(q.queue, EXCHANGE_NAME, TICKET_SERVICE);
 
   channel.consume(
     q.queue,
