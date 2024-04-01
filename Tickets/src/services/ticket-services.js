@@ -7,11 +7,11 @@ class TicketService {
   constructor(channel) {
     this.channel = channel;
   }
-  getAllTickets = async () => {
+  céé = async () => {
     try {
       const tickets = await Ticket.find().limit(10).sort({ _id: -1 });
 
-      return FormateData({ data: tickets });
+      return FormateData({ data: tickets  });
     } catch (error) {
       console.error("Error in getAllTickets:", error);
       return FormateData({

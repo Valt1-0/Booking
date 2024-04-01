@@ -7,8 +7,8 @@ module.exports = async (app) => {
   const channel = await CreateChannel();
 
   app.get("/", async (req, res) => {
-    const allUser = await service.getAllUsers();
-    res.status(allUser.statusCode).json(allUser.data);
+    const allTickets = await service.getAllTickets();
+    res.status(allTickets.statusCode).json(allTickets.data);
   });
   app.get("/:ticketId", async (req, res) => {
     const { ticketId } = req.params;
