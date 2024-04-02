@@ -1,19 +1,36 @@
-const express = require("express");
-const {
-  getAllEvents,
-  getEvent,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} = require("../controller/eventController");
+const { CreateChannel, SubscribeMessage } = require("../utils");
+const EventService = require("../services/event-service");
 const { validateEvent } = require("../middleware/eventValidator");
 
-const router = express.Router();
+module.exports = async (app) => {
+  const channel = await CreateChannel();
+  const service = new EventService(channel);
 
-router.get("/", getAllEvents);
-router.get("/:eventId", getEvent);
-router.post("/", createEvent);
-router.put("/:eventId", validateEvent, updateEvent);
-router.delete("/:eventId", deleteEvent);
+  SubscribeMessage(channel, service);
 
-module.exports = router;
+  app.get("/", async (req,res) => {
+    const allEvents = await service.getAllEvents(req.body);
+    res.status(allEvents.statusCode).json(allEvents.data);
+  } );
+  app.get("/:eventId", async (req,res) => {
+    const event = await service.getEvent(req.params);
+    res.status(event.statusCode).json(event.data);
+  } );
+  app.post("/", async (req, res) => {
+    const createEvent = await service.createEvent(req.body);
+    res.status(createEvent.statusCode).json(createEvent.data);
+  });
+  app.put("/:eventId", validateEvent, (req,res) => {
+    const eventInputs =  {
+      eventId: req.params.eventId,
+      eventData: req.body,
+    };
+    const updateEvent = service.updateEvent(req.params, req.body);
+    res.status(updateEvent.statusCode).json(updateEvent.data);
+  } );
+
+  app.delete("/:eventId", async (req,res) => {
+    const deleteEvent = await service.deleteEvent(req.params);
+    res.status(deleteEvent.statusCode).json(deleteEvent.data);
+  });
+};
