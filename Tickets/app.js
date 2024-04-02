@@ -15,7 +15,6 @@ app.use(bodyParser.json({ type: "application/json" }));
 
 ticketRoute(app);
 
-
 // Server listening
 app.listen(PORT, () => {
   console.log(`Server Users running on port ${PORT}`);
