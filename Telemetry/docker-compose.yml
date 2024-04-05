@@ -1,23 +1,69 @@
 version: "3"
 services:
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: jaeger
+  users:
+    image: users
+    container_name: users
+    restart: always
     ports:
-      - "4317:4317"
-      - "4318:4318"
-      - "5775:5775/udp"
-      - "6831:6831/udp"
-      - "6832:6832/udp"
-      - "5778:5778"
-      - "16686:16686"
-      - "14268:14268"
-      - "14250:14250"
-      - "9411:9411"
-    environment:
-      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
-    networks:
-      - jaegernet
+      - 3002:80
+    env_file:
+      - ../Users/.env.dev
+    depends_on:
+      - users-db
 
-networks:
-  jaegernet:
+  users-db:
+    image: mongo
+    container_name: users-db
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/users:/data/db
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    depends_on:
+      - users
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"

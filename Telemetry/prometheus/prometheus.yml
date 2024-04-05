@@ -1,0 +1,23 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: "users"
+    static_configs:
+      - targets: ["users:3002"]
+
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  - job_name: "users-db"
+    static_configs:
+      - targets: ["users-db:27017"]
+# alerting:
+#   alertmanagers:
+#     - scheme: http
+#       static_configs:
+#         - targets: ["alertmanager:9093"]
+
+# rule_files:
+#   - alert_rules.yml

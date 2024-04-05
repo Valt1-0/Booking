@@ -18,6 +18,7 @@
     "express": "^4.18.3",
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.2.1"
+    "mongoose": "^8.2.1",
+    "prom-client": "^15.1.1"
   }
 }
