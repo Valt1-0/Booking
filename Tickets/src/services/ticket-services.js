@@ -7,7 +7,7 @@ class TicketService {
   constructor(channel) {
     this.channel = channel;
   }
-  céé = async () => {
+  getAllTickets = async () => {
     try {
       const tickets = await Ticket.find().limit(10).sort({ _id: -1 });
 

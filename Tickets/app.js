@@ -1,8 +1,13 @@
 require("dotenv").config();
 require("./src/db/mongoConnect").connect();
+
+const { init } = require("./src/instrumentation");
+const { tracer } = init("Tickets");
+
+const span = tracer.startSpan("my-test-span");
+span.end();
 const express = require("express");
 const { PORT } = require("./src/config/");
-
 const ticketRoute = require("./src/routes/ticketRoutes");
 
 const cors = require("cors");

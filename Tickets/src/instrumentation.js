@@ -1,27 +1,45 @@
-const opentelemetry = require("@opentelemetry/sdk-node");
-const { getNodeAutoInstrumentations } = require("@opentelemetry/auto-instrumentations-node");
-const { OTLPTraceExporter } = require("@opentelemetry/exporter-trace-otlp-proto");
-const { SEMRESATTRS_SERVICE_NAME } = require("@opentelemetry/semantic-conventions");
+const {
+  BatchSpanProcessor,
+} = require("@opentelemetry/sdk-trace-base");
+const { Resource } = require('@opentelemetry/resources')
+const {
+  SEMRESATTRS_SERVICE_NAME,
+} = require("@opentelemetry/semantic-conventions");
+const { ExpressInstrumentation } = require('@opentelemetry/instrumentation-express')
+const { HttpInstrumentation } = require('@opentelemetry/instrumentation-http')
+const { registerInstrumentations } = require('@opentelemetry/instrumentation')
+const { NodeTracerProvider } = require('@opentelemetry/sdk-trace-node')
+const {
+  OTLPTraceExporter,
+} = require("@opentelemetry/exporter-trace-otlp-grpc");
 
-function installInstrumentation({ serviceName }) {
-  console.log("installInstrumentation");
-  const resource = new opentelemetry.resources.Resource({
-    [SEMRESATTRS_SERVICE_NAME]: serviceName,
-  });
-  const sdk = new opentelemetry.NodeSDK({
-    resource,
-    traceExporter: new OTLPTraceExporter({
-      url: "http://localhost:4318/v1/traces",
-    }),
-    // metricReader: new PeriodicExportingMetricReader({
-    //   exporter: new OTLPMetricExporter({
-    //     // url: '<your-otlp-endpoint>/v1/metrics', // url is optional and can be omitted - default is http://localhost:4318/v1/metrics
-    //     headers: {}, // an optional object containing custom headers to be sent with each request
-    //   }),
-    // }),
-    instrumentations: [getNodeAutoInstrumentations({})],
-  });
-  sdk.start();
+
+const init = (serviceName) => {
+
+  const otlpExporter = new OTLPTraceExporter();
+
+
+const provider = new NodeTracerProvider({
+  resource: new Resource({
+    [SEMRESATTRS_SERVICE_NAME]: serviceName ,
+  }),
+});
+
+provider.addSpanProcessor(new BatchSpanProcessor(otlpExporter));
+
+provider.register()
+
+console.log('tracing initialized')
+
+// Register insturmentation for tracing
+registerInstrumentations({
+instrumentations: [new ExpressInstrumentation(), new HttpInstrumentation()],
+})
+
+const tracer = provider.getTracer(serviceName)
+return { tracer }
 }
 
-installInstrumentation({ serviceName: "tickets" });
+module.exports = {
+init: init,
+}
