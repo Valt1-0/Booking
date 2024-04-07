@@ -1,6 +1,4 @@
-const {
-  FormateData
-} = require("../utils");
+const { FormateData } = require("../utils");
 const Ticket = require("../db/models/ticketModel");
 
 class TicketService {
@@ -11,7 +9,7 @@ class TicketService {
     try {
       const tickets = await Ticket.find().limit(10).sort({ _id: -1 });
 
-      return FormateData({ data: tickets  });
+      return FormateData({ data: tickets });
     } catch (error) {
       console.error("Error in getAllTickets:", error);
       return FormateData({
@@ -37,19 +35,33 @@ class TicketService {
   };
 
   buyTickets = async (ticketInputs) => {
-    const { eventId, userId, quantity } = ticketInputs;
+    const { eventId, userId, quantity,price } = ticketInputs;
+
+    //payment vérification
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
     try {
       const tickets = [];
       for (let i = 0; i < quantity; i++) {
-        const ticket = await Ticket.create({
-          eventId,
-          userId,
-          available: true,
-          purchaseDate: new Date(),
-        });
+        const ticket = await Ticket.create(
+          [
+            {
+              eventId,
+              userId,
+              available: true,
+              purchaseDate: new Date(),
+              price
+            },
+          ],
+          { session }
+        );
         tickets.push(ticket);
       }
+
+      await session.commitTransaction();
+      session.endSession();
 
       return FormateData({
         data: tickets,
@@ -57,6 +69,10 @@ class TicketService {
       });
     } catch (error) {
       console.error("Error in buyTickets:", error);
+
+      await session.abortTransaction();
+      session.endSession();
+      //rollback payment transaction
       return FormateData({
         msg: "An error occurred while buying the tickets.",
         statusCode: 500,
@@ -64,8 +80,16 @@ class TicketService {
     }
   };
 
+  purchaseTicketValidation = async (ticketInputs) => { 
+
+    ticketInputs.map(async (ticket) => { 
+
+
+    });
+  };
+
   updateTicket = async (ticketInputs) => {
-    const { ticketId, userId, eventId, quantity, totalPrice, purchaseDate } =
+    const { ticketId, userId, eventId, quantity, price, purchaseDate, status } =
       ticketInputs;
 
     try {
@@ -75,8 +99,9 @@ class TicketService {
           eventId,
           userId,
           quantity,
-          totalPrice,
+          price,
           purchaseDate,
+          status,
         },
         { new: true }
       );
@@ -113,7 +138,10 @@ class TicketService {
     const { event, data } = payload;
 
     switch (event) {
-      case "CREATE_TICKET":
+      case "PURCHASE_TICKET_CONFIRMED":
+        this.buyTickets(data);
+        break;
+      case "PURCHASE_TICKET_FAILED":
         this.buyTickets(data);
         break;
       case "UPDATE_TICKET":

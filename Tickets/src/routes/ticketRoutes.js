@@ -17,6 +17,7 @@ module.exports = async (app) => {
 
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
+
   app.post("/", async (req, res) => {
     const ticket = await service.buyTickets(req.body);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
@@ -25,7 +26,7 @@ module.exports = async (app) => {
           eventId: req.body?.eventId,
           userId: req.user.userId,
           quantity: req.body?.quantity,
-          totalPrice: req.body?.totalPrice,
+          price: req.body?.price,
           purchaseDate: req.body?.purchaseDate,
         },
         event: "BUY_TICKET",
