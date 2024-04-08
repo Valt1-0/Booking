@@ -1,5 +1,6 @@
 const { FormateData } = require("../utils");
 const Ticket = require("../db/models/ticketModel");
+const mongoose = require("mongoose");
 
 class TicketService {
   constructor(channel) {
@@ -35,7 +36,7 @@ class TicketService {
   };
 
   buyTickets = async (ticketInputs) => {
-    const { eventId, userId, quantity,price } = ticketInputs;
+    const { eventId, userId, quantity, price } = ticketInputs;
 
     //payment vérification
 
@@ -52,7 +53,7 @@ class TicketService {
               userId,
               available: true,
               purchaseDate: new Date(),
-              price
+              price,
             },
           ],
           { session }
@@ -80,12 +81,45 @@ class TicketService {
     }
   };
 
-  purchaseTicketValidation = async (ticketInputs) => { 
+  purchaseTicketValidation = async (ticketInputs,status) => {
+    const { tickets } = ticketInputs;
 
-    ticketInputs.map(async (ticket) => { 
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
+    try {
+      const ticketIds = tickets.map((ticket) => ticket.ticketId);
+      const updatedTickets = await Ticket.updateMany(
+        { _id: { $in: ticketIds } },
+        { status : status },
+        { session }
+      );
 
-    });
+      if (updatedTickets.nModified === 0) {
+        throw new Error("No ticket found !");
+      }
+
+      await session.commitTransaction();
+
+      return FormateData({
+        data: updatedTickets,
+        statusCode: 200,
+      });
+    } catch (error) {
+      console.error("Error in purchaseTicketValidation:", error);
+
+      await session.abortTransaction();
+
+      return FormateData({
+        msg:
+          error.message === "No ticket found !"
+            ? error.message
+            : "Internal server error",
+        statusCode: error.message === "No ticket found !" ? 404 : 500,
+      });
+    } finally {
+      session.endSession();
+    }
   };
 
   updateTicket = async (ticketInputs) => {
@@ -139,10 +173,10 @@ class TicketService {
 
     switch (event) {
       case "PURCHASE_TICKET_CONFIRMED":
-        this.buyTickets(data);
+        this.purchaseTicketValidation(data, "CONFIRMED");
         break;
       case "PURCHASE_TICKET_FAILED":
-        this.buyTickets(data);
+        this.purchaseTicketValidation(data,"CANCELLED");
         break;
       case "UPDATE_TICKET":
         this.updateTicket(data);

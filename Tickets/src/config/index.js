@@ -16,4 +16,5 @@ module.exports = {
   AUTH_SERVICE: process.env.AUTH_SERVICE_QUEUE,
   USER_SERVICE: process.env.USER_SERVICE_QUEUE,
   TICKET_SERVICE: process.env.TICKET_SERVICE_QUEUE,
+  EVENT_SERVICE: process.env.EVENT_SERVICE_QUEUE,
 };

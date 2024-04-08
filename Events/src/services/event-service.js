@@ -111,31 +111,31 @@ class EventService {
     }
   };
 
-  verificationPurchaseEvent = async (eventInputs) => {
-    const { eventId, quantity } = eventInputs;
+  verificationPurchaseTicketsEvent = async (eventInputs) => {
+    console.log("Verifying");
+    const { tickets } = eventInputs;
 
     try {
+      const quantity = tickets.length;
       const event = await Event.findById(eventId);
 
-      if (!event)
-        return FormateData({
-          msg: "No event found with this ID!",
-          statusCode: 404,
-        });
+      if (!event) return FormateData({ msg: "Event not found", statusCode: 404 });
 
-      if (event.capacity < quantity)
-        return FormateData({
-          msg: "The number of tickets requested exceeds the capacity of the event.",
-          statusCode: 400,
-        });
+        const eventUpdate = await Event.updateOne(
+           { _id: event._id, capacity: { $gte: quantity } },
+           { $inc: { capacity: -quantity } }
+         );
 
-      return FormateData({
-        data: {
-          event,
-          totalAmount: event.ticketPrice * quantity,
-        },
-        statusCode: 200,
-      });
+        if (!eventUpdate) return FormateData({ msg: "", statusCode: 400 });
+
+         if (eventUpdate.nModified ==0)
+            return FormateData({
+              msg: "Not enough tickets available",
+              statusCode: 400,
+            });
+
+           return FormateData({ data: tickets, statusCode: 200 });
+   
     } catch (error) {
       console.error("Error during verificationPurchaseEvent:", error);
       return FormateData({
@@ -151,8 +151,8 @@ class EventService {
     const { event, data } = payload;
 
     switch (event) {
-      case "VERIFIED":
-        this.verificationPurchaseEvent(data);
+      case "VERIFICATION_PURCHASE_TICKETS_EVENT":
+        this.verificationPurchaseTicketsEvent(data);
         break;
       default:
         break;

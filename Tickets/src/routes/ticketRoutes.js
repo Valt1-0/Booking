@@ -1,10 +1,12 @@
 
 const TicketService = require("../services/ticket-services");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
-
+const { EVENT_SERVICE, NOTIFICATION_SERVICE } = require('../config')
 module.exports = async (app) => {
   const service = new TicketService();
   const channel = await CreateChannel();
+
+  SubscribeMessage(channel, service);
 
   app.get("/", async (req, res) => {
     const allTickets = await service.getAllTickets();
@@ -22,16 +24,10 @@ module.exports = async (app) => {
     const ticket = await service.buyTickets(req.body);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
       const payload = {
-        data: {
-          eventId: req.body?.eventId,
-          userId: req.user.userId,
-          quantity: req.body?.quantity,
-          price: req.body?.price,
-          purchaseDate: req.body?.purchaseDate,
-        },
-        event: "BUY_TICKET",
+        data: ticket.data,
+        event: "VERIFICATION_PURCHASE_TICKETS_EVENT",
       };
-      PublishMessage(channel, NOTIFICATION_SERVICE, JSON.stringify(payload));
+      PublishMessage(channel, EVENT_SERVICE, JSON.stringify(payload));
     }
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
