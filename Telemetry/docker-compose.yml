@@ -23,6 +23,21 @@ services:
     volumes:
       - ./data/users:/data/db
 
+  tickets-db:
+    image: mongo
+    container_name: tickets-db
+    build:
+      context: ../Tickets/.
+      dockerfile: Dockerfile-mongodb
+    ports:
+      - 27018:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/users:/data/db
+    command: ["-f", "/etc/mongod.conf"]
+
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.49.1
     container_name: cadvisor
