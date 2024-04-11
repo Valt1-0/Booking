@@ -5,55 +5,54 @@ services:
     container_name: users
     restart: always
     ports:
-      - 3002:80
+      - 3002:3002
     env_file:
-      - ../Users/.env.dev
+      - ../Users/.env
     depends_on:
-      - users-db
-
-  users-db:
-    image: mongo
-    container_name: users-db
+      - tickets-db
+  tickets:
+    image: tickets
+    container_name: tickets
     restart: always
     ports:
-      - 27017:27017
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-    volumes:
-      - ./data/users:/data/db
+      - 3004:3004
+    env_file:
+      - ../Tickets/.env.dev
+    depends_on:
+      - tickets-db
+
+  # users-db:
+  #   image: mongo
+  #   container_name: users-db
+  #   restart: always
+  #   ports:
+  #     - 27017:27017
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: example
+  #   volumes:
+  #     - ./data/users:/data/db
 
   tickets-db:
-    image: mongo
-    container_name: tickets-db
     build:
       context: ../Tickets/.
-      dockerfile: Dockerfile-mongodb
-    ports:
-      - 27018:27017
+      dockerfile: ../Tickets/Dockerfile-mongodb
+    container_name: tickets-db
+    restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27017:27017
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27017
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'127.0.0.1:27017'}]}) }" | mongosh --port 27017 -u root -p root --authenticationDatabase admin > /dev/null
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
     volumes:
-      - ./data/users:/data/db
-    command: ["-f", "/etc/mongod.conf"]
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    depends_on:
-      - users
+      - data:/data/db
 
   prometheus:
     image: prom/prometheus:latest
@@ -82,3 +81,11 @@ services:
       - prometheus
     ports:
       - "3000:3000"
+  rabbitmq:
+    image: rabbitmq:alpine
+    container_name: rabbitmq
+    ports:
+      - '5672:5672'
+
+volumes:
+  data: {}
