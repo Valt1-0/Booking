@@ -5,7 +5,7 @@ const {
   GenerateSignature,
 } = require("../utils");
 const Event = require("../models/eventModel");
-const { EVENT_SERVICE } = require("../config");
+const { EVENT_SERVICE, TICKET_SERVICE } = require("../config");
 
 class EventService {
   constructor(channel) {
@@ -112,10 +112,10 @@ class EventService {
   };
 
   verificationPurchaseTicketsEvent = async (eventInputs) => {
-    console.log("Verifying");
-    const { tickets } = eventInputs;
-
+    const  tickets  = eventInputs.tickets;
+console.log("tickets", tickets);
     try {
+      const { eventId } = tickets[0];
       const quantity = tickets.length;
       const event = await Event.findById(eventId);
 
@@ -152,7 +152,16 @@ class EventService {
 
     switch (event) {
       case "VERIFICATION_PURCHASE_TICKETS_EVENT":
-        this.verificationPurchaseTicketsEvent(data);
+        const verified = await this.verificationPurchaseTicketsEvent(data);
+
+        console.log(`Verified`,  verified.statusCode);
+        if (verified.statusCode >= 200 && verified.statusCode < 300) {
+          const payload = {
+            data: {tickets: verified.data, user: data.user},
+            event: "PURCHASE_TICKET_CONFIRMED",
+          };
+          PublishMessage(this.channel, TICKET_SERVICE, JSON.stringify(payload));
+        }
         break;
       default:
         break;

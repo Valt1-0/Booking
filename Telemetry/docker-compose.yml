@@ -9,29 +9,29 @@ services:
     env_file:
       - ../Users/.env
     depends_on:
-      - tickets-db
-  tickets:
-    image: tickets
-    container_name: tickets
-    restart: always
-    ports:
-      - 3004:3004
-    env_file:
-      - ../Tickets/.env.dev
-    depends_on:
-      - tickets-db
-
-  # users-db:
-  #   image: mongo
-  #   container_name: users-db
+      - users-db
+  # tickets:
+  #   image: tickets
+  #   container_name: tickets
   #   restart: always
   #   ports:
-  #     - 27017:27017
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   volumes:
-  #     - ./data/users:/data/db
+  #     - 3004:3004
+  #   env_file:
+  #     - ../Tickets/.env
+  #   depends_on:
+  #     - tickets-db
+
+  users-db:
+    image: mongo
+    container_name: users-db
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/users:/data/db
 
   tickets-db:
     build:
@@ -43,10 +43,10 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - 27017:27017
-    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27017
+      - 27018:27018
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'127.0.0.1:27017'}]}) }" | mongosh --port 27017 -u root -p root --authenticationDatabase admin > /dev/null
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
       interval: 5s
       timeout: 15s
       start_period: 15s
@@ -82,10 +82,17 @@ services:
     ports:
       - "3000:3000"
   rabbitmq:
-    image: rabbitmq:alpine
+    image: rabbitmq:management-alpine
     container_name: rabbitmq
     ports:
-      - '5672:5672'
+      - 5672:5672    #amqp
+      - 15672:15672  #http
+      - 15692:15692  #prometheus
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
 
 volumes:
   data: {}
