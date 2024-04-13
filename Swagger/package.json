@@ -14,6 +14,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "swagger-autogen": "^2.23.7",
+    "swagger-merge": "^0.4.0",
     "swagger-ui-express": "^5.0.0"
   }
 }

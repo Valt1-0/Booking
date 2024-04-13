@@ -25,6 +25,8 @@
     "mocha": "^10.4.0",
     "mongoose": "^8.2.1",
     "prom-client": "^15.1.1",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "swagger-autogen": "^2.23.7",
+    "swagger-ui-express": "^5.0.0"
   }
 }
