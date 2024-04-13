@@ -1,4 +1,4 @@
-const emailConfig = require("../../config/MailConfig");
+const emailConfig = require("../config/MailConfig");
 const nodemailer = require('nodemailer');
 const mailTemplate = require('../../assets/templates/mails')
 const {FormateData } = require('../utils');

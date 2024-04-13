@@ -1,4 +1,4 @@
-const emailConfig = require("../../config/MailConfig");
+const emailConfig = require("../config/MailConfig");
 const nodemailer = require("nodemailer");
 const mailTemplate = require("../../assets/templates/mails");
 const { FormateData } = require("../utils");
@@ -29,12 +29,18 @@ class NotificationService {
           firstname,
           lastname
         );
-         subject = "Account Updated";
+        subject = "Account Updated";
         break;
-      case "Tickets":
+      case "TICKETS":
+        console.log("send mail tickets");
         const tickets = notificationInputs.tickets;
         const status = notificationInputs.status;
-        html = mailTemplate.userTickets.generateCreatedUserEmail(tickets,status);
+        const user = notificationInputs.user;
+        if (!user) return false;
+        html = mailTemplate.mailTickets.generateTicketEmail(
+          tickets,
+          status
+        );
         subject = "Tickets";
         break;
     }
@@ -65,9 +71,12 @@ class NotificationService {
   };
 
   SubscribeEvents = async (payload) => {
+    
+    console.log("test sendMail", payload);
     payload = JSON.parse(payload);
     const { event, data } = payload;
     data.typeOfMail = event;
+    
     switch (event) {
       case "CREATE_USER":
         this.sendMail(data);
@@ -75,7 +84,7 @@ class NotificationService {
       case "UPDATE_USER":
         this.sendMail(data);
         break;
-      case "Tickets":
+      case "TICKETS":
         this.sendMail(data);
         break;
       default:

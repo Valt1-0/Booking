@@ -1,9 +1,7 @@
-require("dotenv").config();
+const {API_PORT } = require('./src/config')
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-
-const port = process.env.EXPRESS_PORT || 3005;
 
 const mailRoutes = require("./src/routes/mailRoutes");
 
@@ -43,9 +41,6 @@ app.use("/swagger", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 /**
  * * Listening
  */
-app.listen(port, () => {
-  console.log(
-    "Server running on :",
-    `https://localhost:${port}`
-  );
+app.listen(API_PORT, () => {
+  console.log("Server running on :", `https://localhost:${API_PORT}`);
 });

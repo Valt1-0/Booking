@@ -1,4 +1,4 @@
-require("dotenv").config();
+const { API_PORT } = require('./src/config');
 require("./src/db/mongoConnect").connect();
 const express = require("express");
 
@@ -18,8 +18,6 @@ const startServer = async () => {
 
     await userRoute(app);
 
-    //Get port in .env file
-    const { API_PORT } = process.env;
 
     app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 

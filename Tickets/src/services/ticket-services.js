@@ -1,6 +1,8 @@
 const { FormateData } = require("../utils");
 const Ticket = require("../db/models/ticketModel");
 const mongoose = require("mongoose");
+const { PublishMessage, CreateChannel } = require("../utils");
+const {NOTIFICATION_SERVICE} = require('../config');
 
 class TicketService {
   constructor(channel) {
@@ -21,8 +23,9 @@ class TicketService {
   };
 
   getTicketById = async (ticketInputs) => {
-    const { ticketId } = ticketInputs;
 
+ 
+    const  ticketId  = ticketInputs;
     try {
       const ticket = await Ticket.findById(ticketId);
       if (!ticket)
@@ -46,25 +49,27 @@ class TicketService {
     try {
       const tickets = [];
       for (let i = 0; i < quantity; i++) {
-        const ticket = (await Ticket.create(
-          [
-            {
-              eventId,
-              userId,
-              available: true,
-              purchaseDate: new Date(),
-              price,
-            },
-          ],
-          { session }
-        ))[0];
+        const ticket = (
+          await Ticket.create(
+            [
+              {
+                eventId,
+                userId,
+                available: true,
+                purchaseDate: new Date(),
+                price,
+              },
+            ],
+            { session }
+          )
+        )[0];
         tickets.push(ticket);
       }
 
       await session.commitTransaction();
       session.endSession();
 
-      console.log("data 0 ",tickets);
+      console.log("data 0 ", tickets);
       return FormateData({
         data: tickets,
         statusCode: 200,
@@ -82,20 +87,22 @@ class TicketService {
     }
   };
 
-  purchaseTicketValidation = async (ticketInputs,status) => {
-    console.log("test", ticketInputs)
-    const  {tickets}  = ticketInputs;
+  purchaseTicketValidation = async (ticketInputs, status) => {
+    console.log("test", ticketInputs);
+    const { tickets } = ticketInputs;
+    if (!tickets.length > 0)  
+      return FormateData({ msg: tickets.msg, statusCode: 404 });
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-const ticketIds = tickets.map((ticket) => ticket._id);
-const updatedTickets = await Ticket.updateMany(
-  { _id: { $in: ticketIds } },
-  { status: status },
-  { session }
-);
+      const ticketIds = tickets.map((ticket) => ticket._id);
+      const updatedTickets = await Ticket.updateMany(
+        { _id: { $in: ticketIds } },
+        { status: status },
+        { session }
+      );
 
       if (updatedTickets.nModified === 0) {
         throw new Error("No ticket found !");
@@ -104,7 +111,7 @@ const updatedTickets = await Ticket.updateMany(
       await session.commitTransaction();
 
       return FormateData({
-        data: updatedTickets,
+        data: tickets,
         statusCode: 200,
       });
     } catch (error) {
@@ -168,21 +175,24 @@ const updatedTickets = await Ticket.updateMany(
     }
   };
 
-  sendMail = async (ticketInputs,status) => {
+  sendMail = async (ticketInputs, userInfo, status) => {
     //Send a notification to the notification service
+    console.log("Send notification to the notification service")
+  const channel = await CreateChannel();
     PublishMessage(
-      this.channel,
+      channel,
       NOTIFICATION_SERVICE,
       JSON.stringify({
         data: {
           tickets: ticketInputs,
           status: status,
-          email: email,
+          user: userInfo,
+          email: userInfo.email
         },
         event: "TICKETS",
       })
     );
-  }
+  };
 
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);
@@ -191,10 +201,33 @@ const updatedTickets = await Ticket.updateMany(
 
     switch (event) {
       case "PURCHASE_TICKET_CONFIRMED":
-        this.purchaseTicketValidation(data, "CONFIRMED");
+        const ticketsConfirmed = await this.purchaseTicketValidation(
+          data,
+          "CONFIRMED"
+        );
+        console.log(ticketsConfirmed.data);
+        if (
+          ticketsConfirmed.statusCode >= 200 &&
+          ticketsConfirmed.statusCode < 300
+        ) {
+          this.sendMail(ticketsConfirmed.data, data.user, "CONFIRMED");
+        } else {
+          this.sendMail(null, data.user, "CANCELLED");
+        }
         break;
       case "PURCHASE_TICKET_FAILED":
-        this.purchaseTicketValidation(data,"CANCELLED");
+        const ticketsCANCELLED = await this.purchaseTicketValidation(
+          data,
+          "CANCELLED"
+        );
+        if (
+          ticketsCANCELLED.statusCode >= 200 &&
+          ticketsCANCELLED.statusCode < 300
+        ) {
+          this.sendMail(ticketsCANCELLED.data, data.user, "CONFIRMED");
+        } else {
+          this.sendMail(null, data.user, "CANCELLED");
+        }
         break;
       case "UPDATE_TICKET":
         this.updateTicket(data);
