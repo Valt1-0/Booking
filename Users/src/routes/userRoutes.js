@@ -9,11 +9,15 @@ module.exports = async (app) => {
   const channel = await CreateChannel();
 
   app.get("/", async (req, res) => {
+    // #swagger.tags = ['Users']
+
     const allUser = await service.getAllUsers();
     res.status(allUser.statusCode).json(allUser.data);
   });
 
-  app.get("/:userId", async (req, res) => {
+  app.get("/getById", async (req, res) => {
+    // #swagger.tags = ['Users']
+
     const { userId } = req.params;
 
     const user = await service.getUser(userId);
@@ -21,8 +25,9 @@ module.exports = async (app) => {
     res.status(user.statusCode).json({ userInfo: user.data });
   });
 
-  // router.post("/login", loginUser);
   app.post("/register", validateUser, async (req, res) => {
+    // #swagger.tags = ['Users']
+
     const user = await service.registerUser(req.body);
     if (user.statusCode >= 200 && user.statusCode < 300) {
       const payload = {
@@ -41,7 +46,9 @@ module.exports = async (app) => {
     res.status(user.statusCode).json({ userInfo: user.data });
   });
 
-  app.put("/:userId", isAuth, async (req, res) => {
+  app.put("/update", isAuth, async (req, res) => {
+    // #swagger.tags = ['Users']
+
     const userInput = {
       ...req.body,
       userId: req.params.userId,
@@ -65,8 +72,9 @@ module.exports = async (app) => {
     }
     res.status(user.statusCode).json(user.data);
   });
-  app.delete("/:userId", async (req, res) => {
-    console.log("delete user", req.user);
+  app.delete("/delete", async (req, res) => {
+    // #swagger.tags = ['Users']
+
     const userInput = {
       ...req.body,
       userId: req.params.userId,
@@ -91,31 +99,3 @@ module.exports = async (app) => {
     res.status(user.statusCode).json(user.data);
   });
 };
-
-//const router = express.Router();
-
-// (async () => {
-//   const channel = await CreateChannel();
-//   SubscribeMessage(channel, userController);
-//   // const payload = {
-//   //   data: {
-//   //     firstname: "test",
-//   //     lastname: "test",
-//   //     userId: "65ff1835a713ede92438015a",
-//   //     email: "test@example.com",
-//   //     password: "testdsqdsd363636dqsQDD*",
-//   //     role: "user",
-//   //   },
-//   //   event: "CREATE_AUTH",
-//   // };
-//   // PublishMessage(channel, AUTH_SERVICE, JSON.stringify(payload));
-
-//   router.get("/", getAllUsers);
-//   router.get("/:userId", getUser);
-//   // router.post("/login", loginUser);
-//   router.post("/register", registerUser);
-//   router.put("/:userId", updateUser);
-//   router.delete("/:userId", deleteUser);
-// })();
-
-// module.exports = router;

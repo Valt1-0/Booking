@@ -8,12 +8,14 @@ module.exports = async (app) => {
 
   SubscribeMessage(channel, service);
 
-  app.post("/" ,async (req, res) => {
+  app.post("/", async (req, res) => {
+
     const createAuth = await service.createAuth(req.body);
     res.status(createAuth.statusCode).json(createAuth.data);
   });
 
   app.post("/login", async (req, res) => {
+
     const loginUser = await service.loginUser(req.body);
     res.removeHeader("Authorization");
     // Ajouter le token dans l'en-tête de la réponse
@@ -23,7 +25,8 @@ module.exports = async (app) => {
       .json({ userInfo: loginUser.data, token: loginUser.otherData?.token });
   });
 
-  app.delete("/", async (req, res) => {
+  app.delete("/delete", async (req, res) => {
+
     const deleteUser = await service.deleteUser(req.params.userId);
     res.removeHeader("Authorization");
     res.status(deleteUser.statusCode).json(deleteUser);

@@ -1,5 +1,6 @@
 const User = require("../db/models/userModel");
 const { FormateData } = require("../utils");
+
 class UserService {
   getAllUsers = async (userInputs) => {
     try {
@@ -17,10 +18,13 @@ class UserService {
 
   getUser = async (userInputs) => {
     const { userId } = userInputs;
-
     try {
       const user = await User.findById(userId).select("-__v");
-      if (!user) return FormateData({ msg: "No user exists with this ID !" , statusCode: 404 });
+      if (!user)
+        return FormateData({
+          msg: "No user exists with this ID !",
+          statusCode: 404,
+        });
 
       return FormateData({ data: user });
     } catch (error) {
@@ -76,7 +80,7 @@ class UserService {
 
   deleteUser = async (userInputs) => {
     const { user, userId } = userInputs;
-    console.log(user)
+    console.log(user);
     if (!userId)
       return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
 
@@ -88,7 +92,7 @@ class UserService {
           msg: "No user exists with this ID !",
           statusCode: 404,
         });
-        console.log(userDelete._id, user.id, user.role);
+      console.log(userDelete._id, user.id, user.role);
       if (user.id !== userDelete._id.toString() && user.role !== "admin")
         return FormateData({
           msg: "You are not authorized to delete this user",

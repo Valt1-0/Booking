@@ -10,10 +10,12 @@ module.exports = async (app) => {
   SubscribeMessage(channel, service);
 
   app.get("/", async (req, res) => {
+
     const allTickets = await service.getAllTickets();
     res.status(allTickets.statusCode).json(allTickets.data);
   });
-  app.get("/:ticketId", async (req, res) => {
+  app.get("/getById", async (req, res) => {
+
     const { ticketId } = req.params;
 
     const ticket = await service.getTicketById(ticketId);
@@ -21,7 +23,8 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.post("/",  async (req, res) => {
+  app.post("/create", async (req, res) => {
+
     const ticketInputs = {
       ...req.body,
       user: req.user,
@@ -29,8 +32,6 @@ module.exports = async (app) => {
 
     const ticket = await service.buyTickets(ticketInputs);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
-
-
       const payload = {
         data: { tickets: ticket.data, user: req.user },
         event: "VERIFICATION_PURCHASE_TICKETS_EVENT",
@@ -40,7 +41,8 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.put("/:ticketId", async (req, res) => {
+  app.put("/update", async (req, res) => {
+
     const ticketInput = {
       ...req.body,
       ticketId: req.params.ticketId,
@@ -64,7 +66,8 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.delete("/:ticketId", async (req, res) => {
+  app.delete("/delete", async (req, res) => {
+
     const ticketInput = {
       ticketId: req.params.ticketId,
       user: req.user,

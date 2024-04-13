@@ -19,6 +19,7 @@
     "joi": "^17.12.2",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.2.1",
-    "supertest": "^6.3.4"
+    "supertest": "^6.3.4",
+    "swagger-ui-express": "^5.0.0"
   }
 }
