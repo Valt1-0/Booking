@@ -22,8 +22,9 @@ const eventValidationSchema = Joi.object({
     "any.required": "Phone number is required.",
   }),
   password: Joi.string()
+    .min(8)
     .pattern(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/
     )
     .required()
     .messages({
@@ -35,8 +36,9 @@ const eventValidationSchema = Joi.object({
 
 // Fonction pour valider un événement
 const validateUser = (req, res, next) => {
-
   const { error } = eventValidationSchema.validate(req.body);
+  console.log(error);
+
   if (error) {
     return res.status(400).json({ message: error });
   }

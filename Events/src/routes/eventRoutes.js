@@ -8,29 +8,30 @@ module.exports = async (app) => {
 
   SubscribeMessage(channel, service);
 
-  app.get("/", async (req,res) => {
+  app.get("/", async (req, res) => {
     const allEvents = await service.getAllEvents(req.body);
     res.status(allEvents.statusCode).json(allEvents.data);
-  } );
-  app.get("/:eventId", async (req,res) => {
+  });
+  app.get("/:eventId", async (req, res) => {
     const event = await service.getEvent(req.params);
     res.status(event.statusCode).json(event.data);
-  } );
+  });
   app.post("/", async (req, res) => {
     const createEvent = await service.createEvent(req.body);
     res.status(createEvent.statusCode).json(createEvent.data);
   });
-  app.put("/:eventId", validateEvent, (req,res) => {
-    const eventInputs =  {
+  app.put("/:eventId", (req, res) => {
+    const eventInputs = {
       eventId: req.params.eventId,
       eventData: req.body,
     };
-    const updateEvent = service.updateEvent(req.params, req.body);
+    const updateEvent = service.updateEvent(eventInputs);
     res.status(updateEvent.statusCode).json(updateEvent.data);
-  } );
+  });
 
-  app.delete("/:eventId", async (req,res) => {
-    const deleteEvent = await service.deleteEvent(req.params);
+  app.delete("/:eventId", async (req, res) => {
+    const { eventId } = req.params;
+    const deleteEvent = await service.deleteEvent(eventId);
     res.status(deleteEvent.statusCode).json(deleteEvent.data);
   });
 };

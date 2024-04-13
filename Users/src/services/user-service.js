@@ -20,7 +20,7 @@ class UserService {
 
     try {
       const user = await User.findById(userId).select("-__v");
-      if (!user) return FormateData({ msg: "No user exists with this ID !" });
+      if (!user) return FormateData({ msg: "No user exists with this ID !" , statusCode: 404 });
 
       return FormateData({ data: user });
     } catch (error) {
@@ -75,7 +75,7 @@ class UserService {
   };
 
   deleteUser = async (userInputs) => {
-    const { email, user, token, userId } = userInputs;
+    const { user, userId } = userInputs;
     console.log(user)
     if (!userId)
       return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
