@@ -1,7 +1,8 @@
-
 const TicketService = require("../services/ticket-services");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
-const { EVENT_SERVICE, NOTIFICATION_SERVICE } = require('../config')
+const { EVENT_SERVICE, NOTIFICATION_SERVICE } = require("../config");
+// const { isAuth } = require("../middleware/auth");
+
 module.exports = async (app) => {
   const service = new TicketService();
   const channel = await CreateChannel();
@@ -20,11 +21,16 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.post("/", async (req, res) => {
-    const ticket = await service.buyTickets(req.body);
+  app.post("/",  async (req, res) => {
+    const ticketInputs = {
+      ...req.body,
+      user: req.user,
+    };
+
+    const ticket = await service.buyTickets(ticketInputs);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
       const payload = {
-        data: ticket.data,
+        data: { tickets: ticket.data, user: req.user },
         event: "VERIFICATION_PURCHASE_TICKETS_EVENT",
       };
       PublishMessage(channel, EVENT_SERVICE, JSON.stringify(payload));
@@ -56,20 +62,20 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  // router.delete("/:ticketId", async (req, res) => {
-  //   const ticketInput = {
-  //     ticketId: req.params.ticketId,
-  //     user: req.user,
-  //   };
-  //   const ticket = await service.deleteTicket(ticketInput.ticketId);
-  //   if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
-  //     const payload = {
-  //       data: {
-  //         ticketId: ticketInput.ticketId,
-  //       },
-  //       event: "DELETE_TICKET",
-  //     };
-  //   }
-  //   res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
-  // });
+  app.delete("/:ticketId", async (req, res) => {
+    const ticketInput = {
+      ticketId: req.params.ticketId,
+      user: req.user,
+    };
+    const ticket = await service.deleteTicket(ticketInput.ticketId);
+    if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
+      const payload = {
+        data: {
+          ticketId: ticketInput.ticketId,
+        },
+        event: "DELETE_TICKET",
+      };
+    }
+    res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
+  });
 };

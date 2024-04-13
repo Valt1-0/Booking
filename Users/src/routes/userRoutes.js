@@ -2,15 +2,17 @@ const { AUTH_SERVICE } = require("../config");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 const UserService = require("../services/user-service");
 const { validateUser } = require("../middleware/userValidator");
-const {isAuth} = require('../middleware/auth');
+const { isAuth } = require("../middleware/auth");
+
 module.exports = async (app) => {
   const service = new UserService();
   const channel = await CreateChannel();
-  
+
   app.get("/", async (req, res) => {
     const allUser = await service.getAllUsers();
     res.status(allUser.statusCode).json(allUser.data);
   });
+
   app.get("/:userId", async (req, res) => {
     const { userId } = req.params;
 
@@ -18,6 +20,7 @@ module.exports = async (app) => {
 
     res.status(user.statusCode).json({ userInfo: user.data });
   });
+
   // router.post("/login", loginUser);
   app.post("/register", validateUser, async (req, res) => {
     const user = await service.registerUser(req.body);
@@ -38,7 +41,7 @@ module.exports = async (app) => {
     res.status(user.statusCode).json({ userInfo: user.data });
   });
 
-  app.put("/:userId", async (req, res) => {
+  app.put("/:userId", isAuth, async (req, res) => {
     const userInput = {
       ...req.body,
       userId: req.params.userId,
@@ -62,7 +65,7 @@ module.exports = async (app) => {
     }
     res.status(user.statusCode).json(user.data);
   });
-  app.delete("/:userId",isAuth, async (req, res) => {
+  app.delete("/:userId", async (req, res) => {
     console.log("delete user", req.user);
     const userInput = {
       ...req.body,
@@ -71,7 +74,6 @@ module.exports = async (app) => {
       token: req.headers.authorization,
     };
     const user = await service.deleteUser(userInput);
-
 
     if (user.statusCode >= 200 && user.statusCode < 300) {
       const payload = {

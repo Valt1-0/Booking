@@ -76,7 +76,7 @@ class EventService {
           statusCode: 404,
         });
 
-      return FormateData({ data: updatedEvent, statusCode: 200 });
+      return FormateData({ data: updatedEvent });
     } catch (error) {
       console.error("Error updating event:", error);
       return FormateData({
@@ -89,12 +89,14 @@ class EventService {
   deleteEvent = async (eventInputs) => {
     const { eventId } = eventInputs;
 
+    console.log("Event ID:", eventId);
+
     try {
       const deletedEvent = await Event.findByIdAndDelete(eventId);
 
       if (!deletedEvent)
         return FormateData({
-          msg: "No event found with this ID!",
+          msg: "No event found with this ID!" + eventId,
           statusCode: 404,
         });
 
