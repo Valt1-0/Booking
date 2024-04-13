@@ -5,11 +5,21 @@ services:
     container_name: users
     restart: always
     ports:
-      - 3002:80
+      - 3002:3002
     env_file:
-      - ../Users/.env.dev
+      - ../Users/.env
     depends_on:
       - users-db
+  # tickets:
+  #   image: tickets
+  #   container_name: tickets
+  #   restart: always
+  #   ports:
+  #     - 3004:3004
+  #   env_file:
+  #     - ../Tickets/.env
+  #   depends_on:
+  #     - tickets-db
 
   users-db:
     image: mongo
@@ -23,22 +33,26 @@ services:
     volumes:
       - ./data/users:/data/db
 
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
+  tickets-db:
+    build:
+      context: ../Tickets/.
+      dockerfile: ../Tickets/Dockerfile-mongodb
+    container_name: tickets-db
     restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27018:27018
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    depends_on:
-      - users
+      - data:/data/db
 
   prometheus:
     image: prom/prometheus:latest
@@ -67,3 +81,18 @@ services:
       - prometheus
     ports:
       - "3000:3000"
+  rabbitmq:
+    image: rabbitmq:management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672    #amqp
+      - 15672:15672  #http
+      - 15692:15692  #prometheus
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+volumes:
+  data: {}

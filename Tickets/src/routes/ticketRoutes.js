@@ -29,6 +29,8 @@ module.exports = async (app) => {
 
     const ticket = await service.buyTickets(ticketInputs);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
+
+
       const payload = {
         data: { tickets: ticket.data, user: req.user },
         event: "VERIFICATION_PURCHASE_TICKETS_EVENT",

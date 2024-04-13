@@ -31,6 +31,12 @@ class NotificationService {
         );
          subject = "Account Updated";
         break;
+      case "Tickets":
+        const tickets = notificationInputs.tickets;
+        const status = notificationInputs.status;
+        html = mailTemplate.userTickets.generateCreatedUserEmail(tickets,status);
+        subject = "Tickets";
+        break;
     }
     if (subject === undefined || html === undefined) {
       console.error("Type de mail non reconnu");
@@ -62,11 +68,14 @@ class NotificationService {
     payload = JSON.parse(payload);
     const { event, data } = payload;
     data.typeOfMail = event;
-    switch (event) {   
+    switch (event) {
       case "CREATE_USER":
         this.sendMail(data);
         break;
-    case 'UPDATE_USER':
+      case "UPDATE_USER":
+        this.sendMail(data);
+        break;
+      case "Tickets":
         this.sendMail(data);
         break;
       default:

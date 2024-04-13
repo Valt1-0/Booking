@@ -1,4 +1,5 @@
 module.exports = {
     userCreated: require('./mailUserCreated'),
-    userUpdated: require('./mailUserUpdated')
+    userUpdated: require('./mailUserUpdated'),
+    mailTickets: require('./mailTickets')
 }

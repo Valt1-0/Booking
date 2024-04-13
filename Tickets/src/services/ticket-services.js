@@ -46,7 +46,7 @@ class TicketService {
     try {
       const tickets = [];
       for (let i = 0; i < quantity; i++) {
-        const ticket = await Ticket.create(
+        const ticket = (await Ticket.create(
           [
             {
               eventId,
@@ -57,13 +57,14 @@ class TicketService {
             },
           ],
           { session }
-        );
+        ))[0];
         tickets.push(ticket);
       }
 
       await session.commitTransaction();
       session.endSession();
 
+      console.log("data 0 ",tickets);
       return FormateData({
         data: tickets,
         statusCode: 200,
@@ -82,18 +83,19 @@ class TicketService {
   };
 
   purchaseTicketValidation = async (ticketInputs,status) => {
-    const { tickets } = ticketInputs;
+    console.log("test", ticketInputs)
+    const  {tickets}  = ticketInputs;
 
     const session = await mongoose.startSession();
     session.startTransaction();
 
     try {
-      const ticketIds = tickets.map((ticket) => ticket.ticketId);
-      const updatedTickets = await Ticket.updateMany(
-        { _id: { $in: ticketIds } },
-        { status : status },
-        { session }
-      );
+const ticketIds = tickets.map((ticket) => ticket._id);
+const updatedTickets = await Ticket.updateMany(
+  { _id: { $in: ticketIds } },
+  { status: status },
+  { session }
+);
 
       if (updatedTickets.nModified === 0) {
         throw new Error("No ticket found !");
@@ -165,6 +167,22 @@ class TicketService {
       res.status(500).send("An error occurred while deleting the ticket.");
     }
   };
+
+  sendMail = async (ticketInputs,status) => {
+    //Send a notification to the notification service
+    PublishMessage(
+      this.channel,
+      NOTIFICATION_SERVICE,
+      JSON.stringify({
+        data: {
+          tickets: ticketInputs,
+          status: status,
+          email: email,
+        },
+        event: "TICKETS",
+      })
+    );
+  }
 
   SubscribeEvents = async (payload) => {
     payload = JSON.parse(payload);

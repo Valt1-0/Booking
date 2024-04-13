@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 const amqplib = require("amqplib");
-const { JWT_SECRET_KEY, EXCHANGE_NAME, MSG_QUEUE_URL,EVENT_SERVICE } = require("../config");
+const {
+  JWT_SECRET_KEY,
+  EXCHANGE_NAME,
+  MSG_QUEUE_URL,
+  EVENT_SERVICE,
+} = require("../config");
 
 module.exports.FormateData = (data) => {
   if (!data) {
@@ -24,7 +29,6 @@ module.exports.FormateData = (data) => {
   return { data: responseData, statusCode, otherData };
 };
 
-
 module.exports.ValidateSignature = async (req) => {
   try {
     const signature = req.get("Authorization");
@@ -40,7 +44,7 @@ module.exports.ValidateSignature = async (req) => {
 
 module.exports.CreateChannel = async () => {
   try {
-    console.log("create")
+    console.log("create");
     const connection = await amqplib.connect(MSG_QUEUE_URL);
     const channel = await connection.createChannel();
     await channel.assertQueue(EXCHANGE_NAME, "direct", { durable: true });
