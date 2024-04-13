@@ -15,6 +15,7 @@ module.exports = async (app) => {
   });
   app.get("/:ticketId", async (req, res) => {
     const { ticketId } = req.params;
+    console.log(ticketId);
 
     const ticket = await service.getTicketById(ticketId);
 

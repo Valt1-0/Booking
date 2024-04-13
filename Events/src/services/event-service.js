@@ -113,7 +113,6 @@ class EventService {
 
   verificationPurchaseTicketsEvent = async (eventInputs) => {
     const  tickets  = eventInputs.tickets;
-console.log("tickets", tickets);
     try {
       const { eventId } = tickets[0];
       const quantity = tickets.length;
@@ -153,15 +152,26 @@ console.log("tickets", tickets);
     switch (event) {
       case "VERIFICATION_PURCHASE_TICKETS_EVENT":
         const verified = await this.verificationPurchaseTicketsEvent(data);
-
+      let payloadSend;
         console.log(`Verified`,  verified.statusCode);
         if (verified.statusCode >= 200 && verified.statusCode < 300) {
-          const payload = {
+           payloadSend = {
             data: {tickets: verified.data, user: data.user},
             event: "PURCHASE_TICKET_CONFIRMED",
-          };
-          PublishMessage(this.channel, TICKET_SERVICE, JSON.stringify(payload));
+          }
+        //  PublishMessage(this.channel, TICKET_SERVICE, JSON.stringify(payload));
         }
+        else {
+          payloadSend = {
+           data: { tickets: verified.data, user: data.user },
+           event: "PURCHASE_TICKET_FAILED",
+         };
+        }
+        PublishMessage(
+          this.channel,
+          TICKET_SERVICE,
+          JSON.stringify(payloadSend)
+        );
         break;
       default:
         break;
