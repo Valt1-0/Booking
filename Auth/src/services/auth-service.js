@@ -65,6 +65,7 @@ class AuthService {
   };
 
   loginUser = async (authInputs) => {
+    console.log("test");
     const { email, password } = authInputs;
 
     try {

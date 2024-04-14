@@ -1,5 +1,5 @@
-const { API_PORT, MONGODB_URI } = require("./src/config");
-console.log(MONGODB_URI);
+const { API_PORT } = require("./src/config");
+
 require("./src/db/mongoConnect").connect();
 
 const { init } = require("./src/instrumentation");
@@ -8,7 +8,6 @@ const { tracer } = init("Tickets");
 // const span = tracer.startSpan("my-test-span");
 // span.end();
 const express = require("express");
-const { PORT } = require("./src/config/");
 const ticketRoute = require("./src/routes/ticketRoutes");
 
 const cors = require("cors");
@@ -24,8 +23,8 @@ const startServer = async () => {
     ticketRoute(app);
 
     // Server listening
-    app.listen(PORT, () => {
-      console.log(`Server Tickets running on port ${PORT}`);
+    app.listen(API_PORT, () => {
+      console.log(`Server Tickets running on port ${API_PORT}`);
     });
 
     return app;

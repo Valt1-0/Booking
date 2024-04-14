@@ -2,7 +2,7 @@ const User = require("../db/models/userModel");
 const { FormateData } = require("../utils");
 
 class UserService {
-  getAllUsers = async (userInputs) => {
+  getAllUsers = async () => {
     try {
       const users = await User.find()
         .select("-__v")
@@ -16,8 +16,7 @@ class UserService {
     }
   };
 
-  getUser = async (userInputs) => {
-    const { userId } = userInputs;
+  getUser = async (userId) => {
     try {
       const user = await User.findById(userId).select("-__v");
       if (!user)
@@ -38,7 +37,7 @@ class UserService {
 
     try {
       const isNewUser = await User.emailAlreadyUse(email);
-      if (!isNewUser)
+      if (isNewUser)
         return FormateData({
           msg: "User already exists. Please log in.",
           statusCode: 409,
@@ -51,7 +50,7 @@ class UserService {
         phone,
       });
 
-      return FormateData({ data: user });
+      return FormateData({ data: user, statusCode: 200});
     } catch (error) {
       console.error("Error in registerUser:", error);
       return FormateData({ msg: "Internal Server Error", statusCode: 500 });
@@ -80,7 +79,6 @@ class UserService {
 
   deleteUser = async (userInputs) => {
     const { user, userId } = userInputs;
-    console.log(user);
     if (!userId)
       return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
 

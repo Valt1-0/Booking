@@ -11,7 +11,7 @@ const result = dotEnv.config({ path: configFile });
 console.log("rabbitmq", process.env.MSG_QUEUE_URL, process.env.NODE_ENV,result);
 
 module.exports = {
-  PORT: process.env.API_PORT,
+  API_PORT: process.env.API_PORT,
   MONGODB_URI: process.env.MONGODB_URI,
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
   EXCHANGE_NAME: process.env.EXCHANGE_NAME,

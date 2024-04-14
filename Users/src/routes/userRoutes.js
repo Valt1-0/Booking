@@ -21,7 +21,7 @@ module.exports = async (app) => {
     // #swagger.description = 'Get user by id'
     // #swagger.parameters['userId'] = { description: 'User Id' }
 
-    const { userId } = req.params;
+    const { userId } = req.query;
 
     const user = await service.getUser(userId);
 
@@ -59,7 +59,7 @@ module.exports = async (app) => {
 
     const userInput = {
       ...req.body,
-      userId: req.params.userId,
+      userId: req.query.userId,
     };
 
     const user = await service.updateUser(userInput);
@@ -80,14 +80,14 @@ module.exports = async (app) => {
     }
     res.status(user.statusCode).json(user.data);
   });
-  app.delete("/delete", async (req, res) => {
+  app.delete("/delete",isAuth, async (req, res) => {
     // #swagger.tags = ['Users']
     // #swagger.description = 'Delete user.'
     // #swagger.parameters['userId'] = { description: 'User Id' }
 
     const userInput = {
       ...req.body,
-      userId: req.params.userId,
+      userId: req.query?.userId,
       user: req.user,
       token: req.headers.authorization,
     };
@@ -108,4 +108,5 @@ module.exports = async (app) => {
 
     res.status(user.statusCode).json(user.data);
   });
+  return app;
 };

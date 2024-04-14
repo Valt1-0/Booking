@@ -1,7 +1,6 @@
 const request = require("supertest");
 const startServer = require("../../app"); // Replace with the correct path to your Express app file
 const mongoose = require("mongoose");
-const { CreateChannel } = require("../utils");
 const assert = require("assert");
 
 let tickets = "";

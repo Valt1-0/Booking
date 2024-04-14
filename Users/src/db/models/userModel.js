@@ -26,9 +26,9 @@ userSchema.statics.emailAlreadyUse = async function (email) {
   if (!email) throw new Error("Invalid Email");
   try {
     const user = await this.findOne({ email });
-    if (user) return false;
+    if (user) return true;
 
-    return true;
+    return false;
   } catch (error) {
     console.log("error inside isThisEmailInUse method", error.message);
     return false;
