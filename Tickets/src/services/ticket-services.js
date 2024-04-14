@@ -2,7 +2,7 @@ const { FormateData } = require("../utils");
 const Ticket = require("../db/models/ticketModel");
 const mongoose = require("mongoose");
 const { PublishMessage, CreateChannel } = require("../utils");
-const {NOTIFICATION_SERVICE} = require('../config');
+const { NOTIFICATION_SERVICE } = require("../config");
 
 class TicketService {
   constructor(channel) {
@@ -23,9 +23,7 @@ class TicketService {
   };
 
   getTicketById = async (ticketInputs) => {
-
- 
-    const  ticketId  = ticketInputs;
+    const ticketId = ticketInputs;
     try {
       const ticket = await Ticket.findById(ticketId);
       if (!ticket)
@@ -90,7 +88,7 @@ class TicketService {
   purchaseTicketValidation = async (ticketInputs, status) => {
     console.log("test", ticketInputs);
     const { tickets } = ticketInputs;
-    if (!tickets.length > 0)  
+    if (!tickets.length > 0)
       return FormateData({ msg: tickets.msg, statusCode: 404 });
 
     const session = await mongoose.startSession();
@@ -177,8 +175,8 @@ class TicketService {
 
   sendMail = async (ticketInputs, userInfo, status) => {
     //Send a notification to the notification service
-    console.log("Send notification to the notification service")
-  const channel = await CreateChannel();
+    console.log("Send notification to the notification service");
+    const channel = await CreateChannel();
     PublishMessage(
       channel,
       NOTIFICATION_SERVICE,
@@ -187,7 +185,7 @@ class TicketService {
           tickets: ticketInputs,
           status: status,
           user: userInfo,
-          email: userInfo.email
+          email: userInfo.email,
         },
         event: "TICKETS",
       })

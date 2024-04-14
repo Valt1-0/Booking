@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const MONGO_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
-console.log(MONGO_URI);
+console.log(MONGODB_URI);
 
 exports.connect = async () => {
   await mongoose

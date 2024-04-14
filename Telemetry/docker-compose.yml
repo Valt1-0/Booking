@@ -1,58 +1,81 @@
-version: "3"
+version: "3.8"
 services:
-  users:
-    image: users
-    container_name: users
-    restart: always
-    ports:
-      - 3002:3002
-    env_file:
-      - ../Users/.env
-    depends_on:
-      - users-db
-  # tickets:
-  #   image: tickets
-  #   container_name: tickets
-  #   restart: always
-  #   ports:
-  #     - 3004:3004
-  #   env_file:
-  #     - ../Tickets/.env
-  #   depends_on:
-  #     - tickets-db
-
   users-db:
-    image: mongo
+    image: mongo:latest
     container_name: users-db
     restart: always
     ports:
-      - 27017:27017
+      - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./data/users:/data/db
+    networks:
+      - telemetry
 
-  tickets-db:
-    build:
-      context: ../Tickets/.
-      dockerfile: ../Tickets/Dockerfile-mongodb
-    container_name: tickets-db
+  mongodb_exporter:
+    image: percona/mongodb_exporter:0.40.0
+    container_name: mongodb_exporter
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
     ports:
-      - 27018:27018
-    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
-    healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
-      interval: 5s
-      timeout: 15s
-      start_period: 15s
-      retries: 10
+      - "9216:9216"
+    environment:
+      MONGODB_URI: "mongodb://root:example@users-db:27017/"
+    depends_on:
+      - users-db
+    networks:
+      - telemetry
+
+  users:
+    image: users
+    container_name: users
+    restart: always
+    ports:
+      - "3002:3002"
+    env_file:
+      - ../Users/.env
+    depends_on:
+      - users-db
+      - rabbitmq
+    networks:
+      - telemetry
+
+  mongo-express:
+    image: mongo-express
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@users-db:27017/
+    depends_on:
+      - users-db
+    networks:
+      - telemetry
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: cadvisor
+    restart: always
     volumes:
-      - data:/data/db
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /var/run/docker.sock:/var/run/docker.sock:rw
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    depends_on:
+      - users
+      - users-db
+    networks:
+      - telemetry
 
   prometheus:
     image: prom/prometheus:latest
@@ -66,11 +89,14 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
       - "9090:9090"
+    networks:
+      - telemetry
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana-oss:latest
     container_name: grafana
     restart: always
+    user: root
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
@@ -81,8 +107,11 @@ services:
       - prometheus
     ports:
       - "3000:3000"
+    networks:
+      - telemetry
+
   rabbitmq:
-    image: rabbitmq:management-alpine
+    image: rabbitmq:latest
     container_name: rabbitmq
     ports:
       - 5672:5672    #amqp
@@ -93,6 +122,29 @@ services:
       interval: 5s
       timeout: 20s
       retries: 5
+    networks:
+      - telemetry
 
-volumes:
-  data: {}
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "4317:4317"
+      - "4318:4318"
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778"
+      - "16686:16686"
+      - "14268:14268"
+      - "14250:14250"
+      - "9411:9411"
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+    networks:
+      - telemetry
+
+
+
+networks:
+  telemetry:

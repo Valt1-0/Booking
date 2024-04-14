@@ -1,0 +1,100 @@
+version: "3.8"
+services:
+  users:
+    image: users
+    container_name: users
+    restart: always
+    ports:
+      - 3002:3002
+    env_file:
+      - ../Users/.env
+    depends_on:
+      - users-db
+
+  # tickets:
+  #   image: tickets
+  #   container_name: tickets
+  #   restart: always
+  #   ports:
+  #     - 3004:3004
+  #   env_file:
+  #     - ../Tickets/.env
+  #   depends_on:
+  #     - tickets-db
+
+  users-db:
+    image: mongo
+    container_name: users-db
+    restart: always
+    ports:
+      - 27017:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/users:/data/db
+
+  tickets-db:
+    build:
+      context: ../Tickets/.
+      dockerfile: ../Tickets/Dockerfile-mongodb
+    container_name: tickets-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    ports:
+      - 27018:27018
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
+    volumes:
+      - data:/data/db
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+
+  rabbitmq:
+    image: rabbitmq:latest
+    container_name: rabbitmq
+    ports:
+      - 5672:5672    #amqp
+      - 15672:15672  #http
+      - 15692:15692  #prometheus
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status"]
+      interval: 5s
+      timeout: 20s
+      retries: 5
+
+volumes:
+  data: {}

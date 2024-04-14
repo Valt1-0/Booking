@@ -2,6 +2,20 @@ apiVersion: 1
 
 datasources:
   - name: Prometheus
+    uid: prometheusdatasource
     type: prometheus
     access: proxy
     url: "http://prometheus:9090"
+
+  - name: Jaeger
+    uid: jaegerdatasource
+    type: jaeger
+    access: proxy
+    url: http://localhost:16686
+
+  - name: MongoDB
+    uid: mongodbdatasource
+    type: mongodb
+    access: proxy
+    url: mongodb://users-db:27017
+

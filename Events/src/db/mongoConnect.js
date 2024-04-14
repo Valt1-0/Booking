@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const { MONGO_URI } = process.env;
+const { MONGODB_URI } = process.env;
 
 exports.connect = async () => {
   await mongoose
-    .connect(MONGO_URI)
+    .connect(MONGODB_URI)
     .then(() => {
       console.log("Successfully connected to database " + mongoose.connection.name);
     })
