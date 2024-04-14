@@ -131,16 +131,6 @@ class TicketService {
   updateTicket = async (ticketInputs) => {
     const { ticketId, userId, eventId, quantity, price, status } = ticketInputs;
 
-    console.log(
-      "ticketId ",
-      ticketId,
-      userId,
-      eventId,
-      quantity,
-      price,
-      status
-    );
-
     try {
       const updatedTicket = await Ticket.findByIdAndUpdate(
         ticketId,
