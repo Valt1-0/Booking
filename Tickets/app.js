@@ -1,5 +1,5 @@
-const { API_PORT } = require("./src/config");
-console.log(process.env.MONGO_URI);
+const { API_PORT, MONGODB_URI } = require("./src/config");
+console.log(MONGODB_URI);
 require("./src/db/mongoConnect").connect();
 
 const { init } = require("./src/instrumentation");

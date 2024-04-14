@@ -86,7 +86,6 @@ class TicketService {
   };
 
   purchaseTicketValidation = async (ticketInputs, status) => {
-    console.log("test", ticketInputs);
     const { tickets } = ticketInputs;
     if (!tickets.length > 0)
       return FormateData({ msg: tickets.msg, statusCode: 404 });
@@ -130,8 +129,17 @@ class TicketService {
   };
 
   updateTicket = async (ticketInputs) => {
-    const { ticketId, userId, eventId, quantity, price, purchaseDate, status } =
-      ticketInputs;
+    const { ticketId, userId, eventId, quantity, price, status } = ticketInputs;
+
+    console.log(
+      "ticketId ",
+      ticketId,
+      userId,
+      eventId,
+      quantity,
+      price,
+      status
+    );
 
     try {
       const updatedTicket = await Ticket.findByIdAndUpdate(
@@ -141,17 +149,17 @@ class TicketService {
           userId,
           quantity,
           price,
-          purchaseDate,
           status,
         },
         { new: true }
       );
+
       if (!updatedTicket)
         return FormateData({
-          msg: "No account exists with this email !",
+          msg: "No tickets updated !",
           statusCode: 404,
         });
-      res.status(200).json(updatedTicket);
+      return FormateData({ data: updatedTicket, statusCode: 200 });
     } catch (error) {
       console.error("Error in updateTicket:", error);
       return FormateData({
@@ -161,21 +169,20 @@ class TicketService {
     }
   };
 
-  deleteUser = async (ticketInputs) => {
-    const { ticketId, user } = ticketInputs;
+  deleteTicket = async (ticketInputs) => {
+    const { ticketId } = ticketInputs;
     try {
       const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
-      if (!deletedTicket) return res.status(404).send("Ticket not found.");
-      res.status(200).send("Ticket has been deleted successfully!");
+      if (!deletedTicket) return FormateData({ msg: "Ticket not found.", statusCode: 404 });
+      return FormateData({ msg: "Ticket has been deleted successfully!", statusCode: 200 });
     } catch (error) {
       console.error("Error in deleteTicket:", error);
-      res.status(500).send("An error occurred while deleting the ticket.");
+      return FormateData({ msg: "Internal server error", statusCode: 500 });
     }
   };
 
   sendMail = async (ticketInputs, userInfo, status) => {
     //Send a notification to the notification service
-    console.log("Send notification to the notification service");
     const channel = await CreateChannel();
     PublishMessage(
       channel,
@@ -203,7 +210,6 @@ class TicketService {
           data,
           "CONFIRMED"
         );
-        console.log(ticketsConfirmed.data);
         if (
           ticketsConfirmed.statusCode >= 200 &&
           ticketsConfirmed.statusCode < 300

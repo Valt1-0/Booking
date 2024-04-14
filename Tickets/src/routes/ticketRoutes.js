@@ -1,7 +1,7 @@
 const TicketService = require("../services/ticket-services");
 const { CreateChannel, SubscribeMessage, PublishMessage } = require("../utils");
 const { EVENT_SERVICE, NOTIFICATION_SERVICE } = require("../config");
-// const { isAuth } = require("../middleware/auth");
+ const { isAuth } = require("../middleware/auth");
 
 module.exports = async (app) => {
   const service = new TicketService();
@@ -12,7 +12,6 @@ module.exports = async (app) => {
   app.get("/", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Get all tickets.'
-
     const allTickets = await service.getAllTickets();
     res.status(allTickets.statusCode).json(allTickets.data);
   });
@@ -21,7 +20,7 @@ module.exports = async (app) => {
     // #swagger.description = 'Get tickets by id.'
     // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
 
-    const { ticketId } = req.params;
+    const { ticketId } = req.query;
     console.log(ticketId);
 
     const ticket = await service.getTicketById(ticketId);
@@ -29,7 +28,7 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.post("/create", async (req, res) => {
+  app.post("/create",isAuth, async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Create a new ticket.'
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/tickets"}  }}}
@@ -38,7 +37,6 @@ module.exports = async (app) => {
       ...req.body,
       user: req.user,
     };
-
     const ticket = await service.buyTickets(ticketInputs);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
       const payload = {
@@ -47,10 +45,11 @@ module.exports = async (app) => {
       };
       PublishMessage(channel, EVENT_SERVICE, JSON.stringify(payload));
     }
+
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.put("/update", async (req, res) => {
+  app.put("/update", isAuth, async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Update a ticket.'
     // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
@@ -58,8 +57,8 @@ module.exports = async (app) => {
 
     const ticketInput = {
       ...req.body,
-      ticketId: req.params.ticketId,
-      userId: req.user.userId,
+      ticketId: req.query.ticketId,
+      userId: req.user.id,
     };
 
     const ticket = await service.updateTicket(ticketInput);
@@ -79,16 +78,17 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.delete("/delete", async (req, res) => {
+  app.delete("/delete", isAuth, async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Delete a ticket.'
     // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
 
     const ticketInput = {
-      ticketId: req.params.ticketId,
+      ticketId: req.query.ticketId,
       user: req.user,
     };
-    const ticket = await service.deleteTicket(ticketInput.ticketId);
+    console.log(ticketInput);
+    const ticket = await service.deleteTicket(ticketInput);
     if (ticket.statusCode >= 200 && ticket.statusCode < 300) {
       const payload = {
         data: {

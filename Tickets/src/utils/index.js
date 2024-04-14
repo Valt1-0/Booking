@@ -57,7 +57,6 @@ module.exports.PublishMessage = (channel, service, msg) => {
   channel.publish(EXCHANGE_NAME, service, Buffer.from(msg), {
     persistent: true,
   });
-  console.log("Sent: ", msg);
 };
 
 module.exports.SubscribeMessage = async (channel, service) => {
@@ -66,7 +65,6 @@ module.exports.SubscribeMessage = async (channel, service) => {
     exclusive: true,
     durable: true,
   });
-  console.log(` Waiting for messages in queue: ${q.queue}`);
 
   channel.bindQueue(q.queue, EXCHANGE_NAME, TICKET_SERVICE);
 
@@ -74,10 +72,8 @@ module.exports.SubscribeMessage = async (channel, service) => {
     q.queue,
     (msg) => {
       if (msg.content) {
-        console.log("the message is:", msg.content.toString());
         service.SubscribeEvents(msg.content.toString());
       }
-      console.log("[X] received");
     },
     {
       noAck: true,
