@@ -1,6 +1,7 @@
 const { CreateChannel, SubscribeMessage } = require("../utils");
 const EventService = require("../services/event-service");
 const { validateEvent } = require("../middleware/eventValidator");
+ const { isAuth } = require("../middleware/auth");
 
 module.exports = async (app) => {
   const channel = await CreateChannel();
@@ -29,7 +30,9 @@ module.exports = async (app) => {
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
     const role = req.user?.role;
 
-    if (role !== "admin" || role !== "organizer")
+    console.log(req.user, role)
+
+    if (role != "admin" && role != "organizer")
       return res
         .status(403)
         .json({ msg: "You are not authorized to create an event." });
@@ -43,7 +46,7 @@ module.exports = async (app) => {
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
     const role = req.user?.role;
-    if (role !== "admin" || role !== "organizer")
+    if (role != "admin" && role != "organizer")
       return res
         .status(403)
         .json({ msg: "You are not authorized to update an event." });
@@ -61,7 +64,7 @@ module.exports = async (app) => {
     // #swagger.description = 'Delete Event by id.'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
     const role = req.user?.role;
-    if (role !== "admin" || role !== "organizer")
+    if (role != "admin" && role != "organizer")
       return res
         .status(403)
         .json({ msg: "You are not authorized to delete an event." });
