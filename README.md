@@ -51,6 +51,8 @@ NOTIFICATION_SERVICE_QUEUE='notification_service'
 TICKET_SERVICE_QUEUE='ticket_service'
 EVENT_SERVICE_QUEUE='event_service'
 
+```
+
 ## Tests
 
-To run the tests, use the command `npm run test` in the folder of the microservices you want to test.
+To run the tests, use the command `npm run test` in the folder of the microservices you want to tes.
