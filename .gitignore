@@ -2,7 +2,3 @@
 data/
 .vscode
 Swagger/doc/
-Swagger/doc/swagger-auth.json
-Swagger/doc/swagger-events.json
-Swagger/doc/swagger-tickets.json
-Swagger/doc/swagger-users.json
