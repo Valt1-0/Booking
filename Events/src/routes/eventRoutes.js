@@ -30,8 +30,6 @@ module.exports = async (app) => {
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
     const role = req.user?.role;
 
-    console.log(req.user, role)
-
     if (role != "admin" && role != "organizer")
       return res
         .status(403)
