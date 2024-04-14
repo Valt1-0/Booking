@@ -17,6 +17,8 @@ Docker
 - **Tickets** : This microservice is used to manage tickets, allowing users to buy single or multiple tickets.
 - **Notification** : This microservice is used for sending email notifications.
 
+![image](https://github.com/Valt1-0/Booking/assets/44736220/8f766a0b-d8c1-45ce-bc1e-324a1b9f2c74)
+
 ## Installation
 
 To install the Booking system, follow these steps:
