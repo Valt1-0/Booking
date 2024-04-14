@@ -5,50 +5,33 @@ You already know that your system will be used by both small business (maybe a s
 
 Your SaaS system should be able to handle that workload and be optimized as best as you can.
 
-## Table des matières
+## Technologies Used
 
-1. [Description](#description)
-2. [Fonctionnalités](#fonctionnalités)
-3. [Technologies utilisées](#technologies-utilisées)
-4. [Installation](#installation)
-5. [Utilisation](#utilisation)
-6. [Tests](#tests)
-7. [Contribution](#contribution)
-8. [Licence](#licence)
-9. [Contact](#contact)
-
-## Description
-
-Une description détaillée de votre projet. Qu'est-ce que c'est ? Pourquoi a-t-il été créé ? Quel problème résout-il ?
-
-## Fonctionnalités
-
-Listez les fonctionnalités de votre projet. Que peut-il faire ?
-
-## Technologies utilisées
-
-Listez les technologies, les langages, les frameworks et les bibliothèques que vous avez utilisés pour ce projet.
+- Node.js
+- Express.js
+- MongoDB
+- Docker
 
 ## Installation
 
-Instructions détaillées sur la façon d'installer et de configurer votre projet. Incluez les dépendances nécessaires et comment les installer.
+1. Clone this repository on your local machine.
+2. Install the dependencies with the command `npm install`.
+3. Configure your MongoDB database and update the configuration file with your connection information.
+4. Start the server with the command `npm start`.
 
-## Utilisation
-
-Expliquez comment utiliser votre projet. Fournissez des exemples.
 
 ## Tests
 
-Expliquez comment exécuter les tests automatisés pour ce système.
+To run the tests, use the command `npm test`.
 
 ## Contribution
 
-Si vous souhaitez que d'autres contribuent à votre projet, indiquez ici comment ils peuvent le faire.
+If you wish to contribute to this project, please create an issue or a pull request.
 
-## Licence
+## License
 
-Incluez une licence pour votre projet. Cela permet aux autres de savoir ce qu'ils peuvent et ne peuvent pas faire avec votre code.
+This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
 
 ## Contact
 
-Fournissez des informations de contact pour les personnes qui souhaitent vous contacter à propos de votre projet.
+If you have any questions or comments about this project, feel free to contact me at myemail@email.com.
