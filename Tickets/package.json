@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
+    "start": "NODE_ENV=production node app.js",
     "dev": "NODE_ENV=DEV nodemon app.js ",
     "test": "NODE_ENV=test  mocha ./src/tests --timeout 90000 --exit"
   },

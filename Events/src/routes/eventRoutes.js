@@ -23,19 +23,30 @@ module.exports = async (app) => {
     const event = await service.getEvent(req.query);
     res.status(event.statusCode).json(event.data);
   });
-  app.post("/create", async (req, res) => {
+  app.post("/create", isAuth, async (req, res) => {
     // #swagger.tags = ['Events']
     // #swagger.description = 'Create Event.'
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
+    const role = req.user?.role;
+
+    if (role !== "admin" || role !== "organizer")
+      return res
+        .status(403)
+        .json({ msg: "You are not authorized to create an event." });
 
     const createEvent = await service.createEvent(req.body);
     res.status(createEvent.statusCode).json(createEvent.data);
   });
-  app.put("/update", async (req, res) => {
+  app.put("/update", isAuth, async (req, res) => {
     // #swagger.tags = ['Events']
     // #swagger.description = 'Update Event'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
+    const role = req.user?.role;
+    if (role !== "admin" || role !== "organizer")
+      return res
+        .status(403)
+        .json({ msg: "You are not authorized to update an event." });
 
     const eventInputs = {
       eventId: req.query?.eventId,
@@ -45,11 +56,16 @@ module.exports = async (app) => {
     res.status(updateEvent.statusCode).json(updateEvent.data);
   });
 
-  app.delete("/delete", async (req, res) => {
+  app.delete("/delete", isAuth, async (req, res) => {
     // #swagger.tags = ['Events']
     // #swagger.description = 'Delete Event by id.'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
-    console.log(req.query);
+    const role = req.user?.role;
+    if (role !== "admin" || role !== "organizer")
+      return res
+        .status(403)
+        .json({ msg: "You are not authorized to delete an event." });
+
     const { eventId } = req.query;
     const deleteEvent = await service.deleteEvent(eventId);
     res.status(deleteEvent.statusCode).json(deleteEvent.data);
