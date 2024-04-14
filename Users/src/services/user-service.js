@@ -58,23 +58,24 @@ class UserService {
   };
 
   updateUser = async (userInputs) => {
-    const { firstname, lastname, email, phone, userId } = userInputs;
+    const { firstname, lastname, email, phone, userId, user } = userInputs;
+    if (!userId)
+      return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
+   try {
+     const updatedUser = await User.findByIdAndUpdate(
+       { _id: userId },
+       { firstname, lastname, email, phone },
+       { new: true }
+     );
 
-    try {
-      const updatedUser = await User.findByIdAndUpdate(
-        { _id: userId },
-        { firstname, lastname, email, phone },
-        { new: true }
-      );
+     if (!updatedUser)
+       return FormateData({ msg: "User not found", statusCode: 404 });
 
-      if (!updatedUser)
-        return FormateData({ msg: "User not found", statusCode: 404 });
-
-      return FormateData({ data: updatedUser });
-    } catch (error) {
-      console.error("Error in updateUser:", error);
-      return FormateData({ msg: "Internal Server Error", statusCode: 500 });
-    }
+     return FormateData({ data: updatedUser });
+   } catch (error) {
+     console.error("Error in updateUser:", error);
+     return FormateData({ msg: "Internal Server Error", statusCode: 500 });
+   }
   };
 
   deleteUser = async (userInputs) => {

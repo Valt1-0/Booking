@@ -60,6 +60,7 @@ module.exports = async (app) => {
     const userInput = {
       ...req.body,
       userId: req.query.userId,
+      user : req.query.user
     };
 
     const user = await service.updateUser(userInput);
