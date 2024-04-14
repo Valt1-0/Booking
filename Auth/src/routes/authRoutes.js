@@ -9,13 +9,15 @@ module.exports = async (app) => {
   SubscribeMessage(channel, service);
 
   app.post("/", async (req, res) => {
-
+    // #swagger.tags = ['Auth']
+    // #swagger.description = 'Create a new user account'
     const createAuth = await service.createAuth(req.body);
     res.status(createAuth.statusCode).json(createAuth.data);
   });
 
   app.post("/login", async (req, res) => {
-
+    // #swagger.tags = ['Auth']
+    // #swagger.description = 'Authentification d un utilisateur'.
     const loginUser = await service.loginUser(req.body);
     res.removeHeader("Authorization");
     // Ajouter le token dans l'en-tête de la réponse
@@ -26,7 +28,8 @@ module.exports = async (app) => {
   });
 
   app.delete("/delete", async (req, res) => {
-
+    // #swagger.tags = ['Auth']
+    // #swagger.description = 'Delete user.
     const deleteUser = await service.deleteUser(req.params.userId);
     res.removeHeader("Authorization");
     res.status(deleteUser.statusCode).json(deleteUser);
