@@ -8,6 +8,12 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const app = express();
 
+
+const { init } = require("./src/instrumentation");
+const { tracer } = init("Users");
+const span = tracer.startSpan("usersSpan");
+span.end();
+
 const startServer = async () => {
   try {
     app.use(cors());
