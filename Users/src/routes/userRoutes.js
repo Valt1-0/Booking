@@ -10,6 +10,7 @@ module.exports = async (app) => {
 
   app.get("/", async (req, res) => {
     // #swagger.tags = ['Users']
+    // #swagger.description = 'Get All Users.'
 
     const allUser = await service.getAllUsers();
     res.status(allUser.statusCode).json(allUser.data);
@@ -17,7 +18,7 @@ module.exports = async (app) => {
 
   app.get("/getById", async (req, res) => {
     // #swagger.tags = ['Users']
-
+    // #swagger.description = 'Get user by id'
     const { userId } = req.params;
 
     const user = await service.getUser(userId);
@@ -27,7 +28,7 @@ module.exports = async (app) => {
 
   app.post("/register", validateUser, async (req, res) => {
     // #swagger.tags = ['Users']
-
+    // #swagger.description = 'Register an User'
     const user = await service.registerUser(req.body);
     if (user.statusCode >= 200 && user.statusCode < 300) {
       const payload = {
@@ -48,7 +49,7 @@ module.exports = async (app) => {
 
   app.put("/update", isAuth, async (req, res) => {
     // #swagger.tags = ['Users']
-
+    // #swagger.description = 'Update user.'
     const userInput = {
       ...req.body,
       userId: req.params.userId,
@@ -74,7 +75,7 @@ module.exports = async (app) => {
   });
   app.delete("/delete", async (req, res) => {
     // #swagger.tags = ['Users']
-
+    // #swagger.description = 'Delete user.'
     const userInput = {
       ...req.body,
       userId: req.params.userId,
