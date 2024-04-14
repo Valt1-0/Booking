@@ -19,6 +19,8 @@ module.exports = async (app) => {
   app.get("/getById", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Get tickets by id.'
+    // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
+
     const { ticketId } = req.params;
     console.log(ticketId);
 
@@ -30,6 +32,7 @@ module.exports = async (app) => {
   app.post("/create", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Create a new ticket.'
+    // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/tickets"}  }}}
 
     const ticketInputs = {
       ...req.body,
@@ -50,6 +53,8 @@ module.exports = async (app) => {
   app.put("/update", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Update a ticket.'
+    // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
+    // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/tickets"}  }}}
 
     const ticketInput = {
       ...req.body,
@@ -77,6 +82,7 @@ module.exports = async (app) => {
   app.delete("/delete", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Delete a ticket.'
+    // #swagger.parameters['ticketId'] = { description: 'Ticket Id' }
 
     const ticketInput = {
       ticketId: req.params.ticketId,

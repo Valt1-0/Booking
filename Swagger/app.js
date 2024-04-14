@@ -18,10 +18,37 @@ app.use(bodyParser.json({ type: "application/json" }));
 const SWAGGER_PORT = 4000;
 
 // Swagger
-app.use('/users', swaggerUi.serveFiles(usersSwagger), swaggerUi.setup(usersSwagger));
-app.use('/tickets', swaggerUi.serveFiles(ticketsSwagger), swaggerUi.setup(ticketsSwagger));
-app.use('/events', swaggerUi.serveFiles(eventsSwagger), swaggerUi.setup(eventsSwagger));
-app.use('/auth', swaggerUi.serveFiles(authSwagger), swaggerUi.setup(authSwagger));
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>API Documentation</h1>
+    <ul>
+      <li><a href="/users">Users</a></li>
+      <li><a href="/tickets">Tickets</a></li>
+      <li><a href="/events">Events</a></li>
+      <li><a href="/auth">Auth</a></li>
+    </ul>
+  `);
+});
+app.use(
+  "/users",
+  swaggerUi.serveFiles(usersSwagger),
+  swaggerUi.setup(usersSwagger)
+);
+app.use(
+  "/tickets",
+  swaggerUi.serveFiles(ticketsSwagger),
+  swaggerUi.setup(ticketsSwagger)
+);
+app.use(
+  "/events",
+  swaggerUi.serveFiles(eventsSwagger),
+  swaggerUi.setup(eventsSwagger)
+);
+app.use(
+  "/auth",
+  swaggerUi.serveFiles(authSwagger),
+  swaggerUi.setup(authSwagger)
+);
 
 // Server listening
 app.listen(SWAGGER_PORT, () => {
