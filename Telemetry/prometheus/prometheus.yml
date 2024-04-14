@@ -10,14 +10,7 @@ scrape_configs:
     static_configs:
       - targets: ["cadvisor:8080"]
 
-  - job_name: "users-db"
+  - job_name: "mongodb_exporter"
+    scrape_interval: 5s
     static_configs:
-      - targets: ["users-db:27017"]
-# alerting:
-#   alertmanagers:
-#     - scheme: http
-#       static_configs:
-#         - targets: ["alertmanager:9093"]
-
-# rule_files:
-#   - alert_rules.yml
+      - targets: ["localhost:9090","mongodb_exporter:9216"]

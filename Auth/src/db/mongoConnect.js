@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 
-const { MONGO_URI } = require('../config')
+const { MONGODB_URI } = require('../config')
 
 exports.connect = async () => {
   await mongoose
-    .connect(MONGO_URI)
+    .connect(MONGODB_URI)
     .then(() => {
       console.log("Successfully connected to database " + mongoose.connection.name);
     })
