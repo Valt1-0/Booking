@@ -6,9 +6,6 @@ if (process.env.NODE_ENV !== "production") {
 } else {
   dotEnv.config();
 }
- const configFile = `./.env.${process.env.NODE_ENV}`;
-const result = dotEnv.config({ path: configFile });
-console.log("rabbitmq", process.env.MSG_QUEUE_URL, process.env.NODE_ENV,result);
 
 module.exports = {
   API_PORT: process.env.API_PORT,
