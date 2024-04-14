@@ -18,6 +18,9 @@ module.exports = async (app) => {
   app.post("/login", async (req, res) => {
     // #swagger.tags = ['Auth']
     // #swagger.description = 'Authentification d un utilisateur'.
+    // #swagger.security = [{ "Bearer": [] }]
+    // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/auth"}  }}}
+
     const loginUser = await service.loginUser(req.body);
     res.removeHeader("Authorization");
     // Ajouter le token dans l'en-tête de la réponse
@@ -30,6 +33,8 @@ module.exports = async (app) => {
   app.delete("/delete", async (req, res) => {
     // #swagger.tags = ['Auth']
     // #swagger.description = 'Delete user.
+    // #swagger.parameters['userId'] = { description: 'User Id' }
+
     const deleteUser = await service.deleteUser(req.params.userId);
     res.removeHeader("Authorization");
     res.status(deleteUser.statusCode).json(deleteUser);

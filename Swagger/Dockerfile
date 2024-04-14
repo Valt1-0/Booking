@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Exposer le port sur lequel le serveur Node.js écoute
-EXPOSE 3002
+EXPOSE 4000
 
 # Commande à exécuter lorsque le conteneur démarre
 CMD ["npm", "start"]

@@ -14,19 +14,6 @@ services:
     networks:
       - telemetry
 
-  mongodb_exporter:
-    image: percona/mongodb_exporter:0.40.0
-    container_name: mongodb_exporter
-    restart: always
-    ports:
-      - "9216:9216"
-    environment:
-      MONGODB_URI: "mongodb://root:example@users-db:27017/"
-    depends_on:
-      - users-db
-    networks:
-      - telemetry
-
   users:
     image: users
     container_name: users
@@ -38,75 +25,6 @@ services:
     depends_on:
       - users-db
       - rabbitmq
-    networks:
-      - telemetry
-
-  mongo-express:
-    image: mongo-express
-    container_name: mongo-express
-    restart: always
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: example
-      ME_CONFIG_MONGODB_URL: mongodb://root:example@users-db:27017/
-    depends_on:
-      - users-db
-    networks:
-      - telemetry
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:v0.49.1
-    container_name: cadvisor
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - /var/run/docker.sock:/var/run/docker.sock:rw
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    depends_on:
-      - users
-      - users-db
-    networks:
-      - telemetry
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    restart: always
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./prometheus:/etc/prometheus
-    command:
-      - "--config.file=/etc/prometheus/prometheus.yml"
-    ports:
-      - "9090:9090"
-    networks:
-      - telemetry
-
-  grafana:
-    image: grafana/grafana-oss:latest
-    container_name: grafana
-    restart: always
-    user: root
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/provisioning:/etc/grafana/provisioning
-      - ./grafana/data:/var/lib/grafana
-    depends_on:
-      - prometheus
-    ports:
-      - "3000:3000"
     networks:
       - telemetry
 
@@ -144,7 +62,102 @@ services:
     networks:
       - telemetry
 
+  swagger:
+    image: swagger
+    container_name: swagger
+    restart: always
+    ports:
+      - "4000:4000"
+    depends_on:
+      - users
+      # - tickets
+      # - events
+      # - auth
+    networks:
+      - telemetry
 
+  # mongo-express:
+  #   image: mongo-express
+  #   container_name: mongo-express
+  #   restart: always
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: example
+  #     ME_CONFIG_MONGODB_URL: mongodb://root:example@users-db:27017/
+  #   depends_on:
+  #     - users-db
+  #   networks:
+  #     - telemetry
+
+  # cadvisor:
+  #   image: gcr.io/cadvisor/cadvisor:v0.49.1
+  #   container_name: cadvisor
+  #   restart: always
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - /:/rootfs:ro
+  #     - /var/run:/var/run:rw
+  #     - /sys:/sys:ro
+  #     - /var/lib/docker:/var/lib/docker:ro
+  #     - /var/run/docker.sock:/var/run/docker.sock:rw
+  #   devices:
+  #     - /dev/kmsg:/dev/kmsg
+  #   depends_on:
+  #     - users
+  #     - users-db
+  #   networks:
+  #     - telemetry
+
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   container_name: prometheus
+  #   restart: always
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - ./prometheus:/etc/prometheus
+  #   command:
+  #     - "--config.file=/etc/prometheus/prometheus.yml"
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - telemetry
+
+  # grafana:
+  #   image: grafana/grafana-oss:latest
+  #   container_name: grafana
+  #   restart: always
+  #   user: root
+  #   volumes:
+  #     - /etc/localtime:/etc/localtime:ro
+  #     - /etc/timezone:/etc/timezone:ro
+  #     - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+  #     - ./grafana/provisioning:/etc/grafana/provisioning
+  #     - ./grafana/data:/var/lib/grafana
+  #   depends_on:
+  #     - prometheus
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - telemetry
+
+  
+  # mongodb_exporter:
+  #   image: percona/mongodb_exporter:0.40.0
+  #   container_name: mongodb_exporter
+  #   restart: always
+  #   ports:
+  #     - "9216:9216"
+  #   environment:
+  #     MONGODB_URI: "mongodb://root:example@users-db:27017/"
+  #   depends_on:
+  #     - users-db
+  #   networks:
+  #     - telemetry
 
 networks:
   telemetry:

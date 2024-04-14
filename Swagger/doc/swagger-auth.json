@@ -1,0 +1,76 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API Documentation",
+    "description": "Documentation for auth microservice"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3003/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Auth",
+      "description": "Routes related to auth"
+    }
+  ],
+  "paths": {
+    "/": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Create a new user account",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Authentification d un utilisateur",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/delete": {
+      "delete": {
+        "tags": [
+          "Auth"
+        ],
+        "description": "Delete user.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "auth": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": ""
+          }
+        },
+        "required": [
+          "email"
+        ]
+      }
+    }
+  }
+}
