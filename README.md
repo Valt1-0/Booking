@@ -72,12 +72,17 @@ Available on [Swagger](localhost:4000), when docker compose is up 👍
 
 - **Prometheus**: A monitoring system and time-series database that collects metrics from specified targets at given intervals, evaluates rule expressions, and can trigger alerts if some condition is observed to be true. Accessible at [Prometheus](localhost:9090).
 - **Grafana**: An open-source platform for monitoring and observability that allows you to query, visualize, alert on, and understand your metrics no matter where they are stored. Accessible at [Grafana](localhost:3000).
+
+    - 2 Panels :
+        - 1 panels for MongoDB Queries for users-db (for test)
+        - 1 panels for docker info (cAdvisor)
+
 - **Jaeger**: An open-source, end-to-end distributed tracing system that helps developers monitor and troubleshoot complex, microservices-based architectures. Accessible at [Jaeger](localhost:16686).
 - **OTEL Collector**: The OpenTelemetry Collector offers a vendor-agnostic implementation on how to receive, process, and export telemetry data. It removes the need to run, operate, and maintain multiple agents/collectors.
 - **MongoDB Exporter**: A Prometheus exporter for MongoDB metrics. It exports MongoDB metrics for Prometheus consumption.
 - **CAdvisor**: An open-source container resource usage and performance analysis agent. It is developed by Google and provides container users an understanding of the resource usage and performance characteristics of their running containers.
 
-### Gateway
+### Gateway / Load Balancing
 
 - **Nginx Gateway**: A high-performance HTTP server for load balancing and API Gateway. Accessible at localhost:80.
 
@@ -93,14 +98,14 @@ Available on [Swagger](localhost:4000), when docker compose is up 👍
 - **auth2**: Another microservice for managing authentication operations. Accessible for request at localhost:4003.
 - **notification**: A microservice for managing notification operations. Accessible for request at localhost:3005.
 
-## Databases
+### Databases
 
 - **Users-db**: A database for storing user-related data.
 - **Tickets-db**: A database for storing ticket-related data.
 - **Events-db**: A database for storing event-related data.
 - **Auth-db**: A database for storing authentication-related data.
 
-## Queue
+### Queue
 
 - **Rabbitmq**: A message-queueing software also known as a message broker or queue manager. It is designed to exchange data by way of a mechanism known as message queuing.
 
