@@ -63,6 +63,8 @@ The Swagger documentation is auto-generated.
 
 To generate the JSON file, go in **Swagger** folder, run first : `npm install` and after, run : `npm run start`
 
+Available on [Swagger](localhost:4000), when docker compose is up 👍
+
 ## Containers
 
 
