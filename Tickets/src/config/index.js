@@ -7,6 +7,9 @@ if (process.env.NODE_ENV !== "production") {
   dotEnv.config();
 }
 
+
+console.log("rabbitmq", process.env.MSG_QUEUE_URL, process.env.NODE_ENV);
+
 module.exports = {
   API_PORT: process.env.API_PORT,
   MONGODB_URI: process.env.MONGODB_URI,

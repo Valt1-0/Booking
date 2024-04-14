@@ -17,6 +17,8 @@ Docker
 - **Tickets** : This microservice is used to manage tickets, allowing users to buy single or multiple tickets.
 - **Notification** : This microservice is used for sending email notifications.
 
+![image](https://github.com/Valt1-0/Booking/assets/44736220/8f766a0b-d8c1-45ce-bc1e-324a1b9f2c74)
+
 ## Installation
 
 To install the Booking system, follow these steps:
@@ -27,6 +29,29 @@ To install the Booking system, follow these steps:
 - Setup the Docker compose : `docker compose . -d`
 - Configure environment variables as needed in .env of each Microservices.
 
+## Environment Variables
+
+The project uses different environment files depending on the run mode:
+
+- For starting the project in production mode, use `npm start` with the `.env` file.
+- For starting the project in development mode, use `npm run dev` with the `.env.dev` file.
+- For running tests, use `npm run test` with the `.env.test` file.
+
+Here’s an example of what the `.env` file might look like:
+
+```env
+MONGODB_URI='mongodb://{credentials}@localhost:27018/DBNAME?authSource=admin&authMechanism=DEFAULT'
+API_PORT="3004"
+JWT_SECRET_KEY="SECRET_KEY"
+MSG_QUEUE_URL='amqp://localhost:5672'
+EXCHANGE_NAME='BOOKING'
+AUTH_SERVICE_QUEUE='auth_service'
+USER_SERVICE_QUEUE='user_service'
+NOTIFICATION_SERVICE_QUEUE='notification_service'
+TICKET_SERVICE_QUEUE='ticket_service'
+EVENT_SERVICE_QUEUE='event_service'
+
+```
 
 ## Tests
 

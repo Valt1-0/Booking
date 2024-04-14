@@ -1,13 +1,35 @@
 const request = require("supertest");
 const startServer = require("../../app"); // Replace with the correct path to your Express app file
 const assert = require("assert");
-let eventId = "";
+let eventId;
+let token;
+
+async function Authenticate(email, password) {
+  const response = await fetch("http://127.0.0.1:3003/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
 
 describe("Event API", () => {
   let app;
 
   before(async () => {
     app = await startServer(); // Start the Express server before running tests
+     const auth = await Authenticate("admin@admin.com", "Test1234!");
+     if (!auth) throw new Error("Authentication failed");
+     token = auth.token;
   });
 
 
@@ -26,7 +48,10 @@ describe("Event API", () => {
         performers: "Mitry Dims",
       };
 
-      const response = await request(app).post("/create").send(newEvent).expect(200);
+      const response = await request(app)
+      .post("/create")  
+      .set("Authorization", `Bearer ${token}`)
+      .send(newEvent).expect(200);
 
       eventId = await response.body._id;
 
@@ -47,10 +72,7 @@ describe("Event API", () => {
       .query({ eventId })
       .expect(200);
     assert(response.body);
-
-
   });
-
 
 
   it("should update an event by eventId", async () => {
@@ -70,7 +92,8 @@ describe("Event API", () => {
 
     const response = await request(app)
       .put(`/update`)
-      .query({eventId: eventId})
+      .set("Authorization", `Bearer ${token}`)
+      .query({ eventId: eventId })
       .send(updatedEvent)
       .expect(200);
 
@@ -80,7 +103,8 @@ describe("Event API", () => {
   it("should delete an event by eventId", async () => {
     const response = await request(app)
       .delete(`/delete`)
-      .query({eventId: eventId})
+      .set("Authorization", `Bearer ${token}`)
+      .query({ eventId: eventId })
       .expect(200);
 
     console.log(eventId);
