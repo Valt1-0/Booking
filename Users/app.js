@@ -3,8 +3,6 @@ require("./src/db/mongoConnect").connect();
 const express = require("express");
 
 const userRoute = require("./src/routes/userRoutes");
-const swaggerUi = require("swagger-ui-express");
-const swaggerFile = require("./swagger.json");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -17,9 +15,6 @@ const startServer = async () => {
     app.use(bodyParser.json({ type: "application/json" }));
 
     await userRoute(app);
-
-
-    app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
     // Server listening
     app.listen(API_PORT, () => {

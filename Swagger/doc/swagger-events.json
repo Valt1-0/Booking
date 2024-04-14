@@ -1,0 +1,158 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "API Documentation",
+    "description": "Documentation for events microservice"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3001/"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Events",
+      "description": "Routes related to events"
+    }
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "description": "Get all events.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/getById": {
+      "get": {
+        "tags": [
+          "Events"
+        ],
+        "description": "Get Event by id.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/create": {
+      "post": {
+        "tags": [
+          "Events"
+        ],
+        "description": "Create Event.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/update": {
+      "put": {
+        "tags": [
+          "Events"
+        ],
+        "description": "Update Event",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/delete": {
+      "delete": {
+        "tags": [
+          "Events"
+        ],
+        "description": "Delete Event by id.",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "events": {
+        "type": "object",
+        "properties": {
+          "eventName": {
+            "type": "string",
+            "example": "Event Name"
+          },
+          "localization": {
+            "type": "string",
+            "example": "Event Location"
+          },
+          "date": {
+            "type": "string",
+            "example": "2021-12-31"
+          },
+          "startTime": {
+            "type": "string",
+            "example": "10:00"
+          },
+          "endTime": {
+            "type": "string",
+            "example": "18:00"
+          },
+          "description": {
+            "type": "string",
+            "example": "Event Description"
+          },
+          "organizer": {
+            "type": "string",
+            "example": "Event Organizer"
+          },
+          "ticketPrice": {
+            "type": "number",
+            "example": 100
+          },
+          "capacity": {
+            "type": "number",
+            "example": 100
+          },
+          "isCancelled": {
+            "type": "boolean",
+            "example": false
+          },
+          "performers": {
+            "type": "array",
+            "example": [
+              "Performer 1",
+              "Performer 2"
+            ],
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "eventName",
+          "localization",
+          "date",
+          "startTime",
+          "endTime",
+          "description",
+          "organizer",
+          "ticketPrice",
+          "capacity",
+          "isCancelled",
+          "performers"
+        ]
+      }
+    }
+  }
+}

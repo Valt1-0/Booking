@@ -1,3 +1,5 @@
+## This script will run npm install or npm run dev in all directories in the current folder
+
 @echo off
 
 setlocal enabledelayedexpansion

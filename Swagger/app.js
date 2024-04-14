@@ -1,7 +1,10 @@
 const express = require("express");
-
 const swaggerUi = require("swagger-ui-express");
-const swaggerFile = require("./swagger.json");
+
+const usersSwagger = require("./doc/swagger-users.json");
+const ticketsSwagger = require("./doc/swagger-tickets.json");
+const eventsSwagger = require("./doc/swagger-events.json");
+const authSwagger = require("./doc/swagger-auth.json");
 
 const cors = require("cors");
 const bodyParser = require("body-parser");
@@ -14,9 +17,13 @@ app.use(bodyParser.json({ type: "application/json" }));
 //Get port in .env file
 const SWAGGER_PORT = 4000;
 
-app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+// Swagger
+app.use('/users', swaggerUi.serveFiles(usersSwagger), swaggerUi.setup(usersSwagger));
+app.use('/tickets', swaggerUi.serveFiles(ticketsSwagger), swaggerUi.setup(ticketsSwagger));
+app.use('/events', swaggerUi.serveFiles(eventsSwagger), swaggerUi.setup(eventsSwagger));
+app.use('/auth', swaggerUi.serveFiles(authSwagger), swaggerUi.setup(authSwagger));
 
 // Server listening
 app.listen(SWAGGER_PORT, () => {
-  console.log(`Server Users running on port ${SWAGGER_PORT}`);
+  console.log(`Server Swagger running on port ${SWAGGER_PORT}`);
 });
