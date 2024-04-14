@@ -14,8 +14,47 @@ services:
     networks:
       - telemetry
 
+  tickets-db:
+    build:
+      context: ../Tickets/.
+      dockerfile: ../Tickets/Dockerfile-mongodb
+    container_name: tickets-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27018:27018
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
+    volumes:
+      - data:/data/db
+    networks:
+      - telemetry
+
+  events-db:
+    image: mongo:latest
+    container_name: events-db
+    restart: always
+    ports:
+      - "27019:27019"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/events:/data/db
+    networks:
+      - telemetry
+
   users:
     image: users
+    build:
+      context: ../Users/.
     container_name: users
     restart: always
     ports:
@@ -112,52 +151,53 @@ services:
   #   networks:
   #     - telemetry
 
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   container_name: prometheus
-  #   restart: always
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - ./prometheus:/etc/prometheus
-  #   command:
-  #     - "--config.file=/etc/prometheus/prometheus.yml"
-  #   ports:
-  #     - "9090:9090"
-  #   networks:
-  #     - telemetry
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./prometheus:/etc/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    ports:
+      - "9090:9090"
+    networks:
+      - telemetry
 
-  # grafana:
-  #   image: grafana/grafana-oss:latest
-  #   container_name: grafana
-  #   restart: always
-  #   user: root
-  #   volumes:
-  #     - /etc/localtime:/etc/localtime:ro
-  #     - /etc/timezone:/etc/timezone:ro
-  #     - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-  #     - ./grafana/provisioning:/etc/grafana/provisioning
-  #     - ./grafana/data:/var/lib/grafana
-  #   depends_on:
-  #     - prometheus
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - telemetry
+  grafana:
+    image: grafana/grafana-oss:latest
+    container_name: grafana
+    restart: always
+    user: root
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    ports:
+      - "3000:3000"
+    networks:
+      - telemetry
 
-  
-  # mongodb_exporter:
-  #   image: percona/mongodb_exporter:0.40.0
-  #   container_name: mongodb_exporter
-  #   restart: always
-  #   ports:
-  #     - "9216:9216"
-  #   environment:
-  #     MONGODB_URI: "mongodb://root:example@users-db:27017/"
-  #   depends_on:
-  #     - users-db
-  #   networks:
-  #     - telemetry
+  mongodb_exporter:
+    image: percona/mongodb_exporter:0.40.0
+    container_name: mongodb_exporter
+    restart: always
+    command: --mongodb.uri="mongodb://root:example@users-db:27017/UsersDB?authSource=admin&authMechanism=SCRAM-SHA-256" --collect-all --discovering-mode
+    ports:
+      - "9216:9216"
+    depends_on:
+      - users-db
+    networks:
+      - telemetry
 
 networks:
   telemetry:
+
+volumes:
+  data: {}

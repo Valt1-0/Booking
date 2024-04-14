@@ -34,26 +34,26 @@ services:
     volumes:
       - ./data/users:/data/db
 
-  tickets-db:
-    build:
-      context: ../Tickets/.
-      dockerfile: ../Tickets/Dockerfile-mongodb
-    container_name: tickets-db
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: root
-    ports:
-      - 27018:27018
-    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
-    healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
-      interval: 5s
-      timeout: 15s
-      start_period: 15s
-      retries: 10
-    volumes:
-      - data:/data/db
+  # tickets-db:
+  #   build:
+  #     context: ../Tickets/.
+  #     dockerfile: ../Tickets/Dockerfile-mongodb
+  #   container_name: tickets-db
+  #   restart: always
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: root
+  #     MONGO_INITDB_ROOT_PASSWORD: 4!3k7Ww%FZBeWRP!6Bjk
+  #   ports:
+  #     - 27018:27018
+  #   command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
+  #   healthcheck:
+  #     test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+  #     interval: 5s
+  #     timeout: 15s
+  #     start_period: 15s
+  #     retries: 10
+  #   volumes:
+  #     - data:/data/db
 
   prometheus:
     image: prom/prometheus:latest
