@@ -5,33 +5,29 @@ You already know that your system will be used by both small business (maybe a s
 
 Your SaaS system should be able to handle that workload and be optimized as best as you can.
 
-## Technologies Used
+## Requirement
 
-- Node.js
-- Express.js
-- MongoDB
-- Docker
+Docker
+
+## Microservices
+
+- **Users** : This microservice is used to manage users, such as registering and creating accounts, updating, and deleting.
+- **Events** : This microservice is used to manage events.
+- **Auth** : This microservice is used for user authentication, such as login.
+- **Tickets** : This microservice is used to manage tickets, allowing users to buy single or multiple tickets.
+- **Notification** : This microservice is used for sending email notifications.
 
 ## Installation
 
-1. Clone this repository on your local machine.
-2. Install the dependencies with the command `npm install`.
-3. Configure your MongoDB database and update the configuration file with your connection information.
-4. Start the server with the command `npm start`.
+To install the Booking system, follow these steps:
+
+- Clone the repository: `git clone https://github.com/Valt1-0/Booking.git`
+- Navigate to the project directory: `cd Booking`
+- Go to Telemetry folder : `cd Telemetry`
+- Setup the Docker compose : `docker compose . -d`
+- Configure environment variables as needed in .env of each Microservices.
 
 
 ## Tests
 
-To run the tests, use the command `npm test`.
-
-## Contribution
-
-If you wish to contribute to this project, please create an issue or a pull request.
-
-## License
-
-This project is under the MIT license. See the [LICENSE](LICENSE) file for more details.
-
-## Contact
-
-If you have any questions or comments about this project, feel free to contact me at myemail@email.com.
+To run the tests, use the command `npm run test` in the folder of the microservices you want to tes.
