@@ -1,4 +1,4 @@
-require("dotenv").config();
+const {API_PORT} = require('./src/config')
 require("./src/db/mongoConnect").connect();
 const express = require("express");
 
@@ -14,10 +14,9 @@ const startServer = async () => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(bodyParser.json({ type: "application/json" }));
 
-    await eventRoute(app);
 
-    //Get port in .env file
-    const { API_PORT } = process.env;
+      await eventRoute(app);
+
 
     // Server listening
     app.listen(API_PORT, () => {

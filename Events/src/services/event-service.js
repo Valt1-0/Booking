@@ -76,7 +76,7 @@ class EventService {
           statusCode: 404,
         });
 
-      return FormateData({ data: updatedEvent });
+      return FormateData({ data: updatedEvent, statusCode: 200 });
     } catch (error) {
       console.error("Error updating event:", error);
       return FormateData({
@@ -86,8 +86,7 @@ class EventService {
     }
   };
 
-  deleteEvent = async (eventInputs) => {
-    const { eventId } = eventInputs;
+  deleteEvent = async (eventId) => {
 
     console.log("Event ID:", eventId);
 
@@ -114,29 +113,29 @@ class EventService {
   };
 
   verificationPurchaseTicketsEvent = async (eventInputs) => {
-    const  tickets  = eventInputs.tickets;
+    const tickets = eventInputs.tickets;
     try {
       const { eventId } = tickets[0];
       const quantity = tickets.length;
       const event = await Event.findById(eventId);
 
-      if (!event) return FormateData({ msg: "Event not found", statusCode: 404 });
+      if (!event)
+        return FormateData({ msg: "Event not found", statusCode: 404 });
 
-        const eventUpdate = await Event.updateOne(
-           { _id: event._id, capacity: { $gte: quantity } },
-           { $inc: { capacity: -quantity } }
-         );
+      const eventUpdate = await Event.updateOne(
+        { _id: event._id, capacity: { $gte: quantity } },
+        { $inc: { capacity: -quantity } }
+      );
 
-        if (!eventUpdate) return FormateData({ msg: "", statusCode: 400 });
+      if (!eventUpdate) return FormateData({ msg: "", statusCode: 400 });
 
-         if (eventUpdate.nModified ==0)
-            return FormateData({
-              msg: "Not enough tickets available",
-              statusCode: 400,
-            });
+      if (eventUpdate.nModified == 0)
+        return FormateData({
+          msg: "Not enough tickets available",
+          statusCode: 400,
+        });
 
-           return FormateData({ data: tickets, statusCode: 200 });
-   
+      return FormateData({ data: tickets, statusCode: 200 });
     } catch (error) {
       console.error("Error during verificationPurchaseEvent:", error);
       return FormateData({
@@ -154,20 +153,19 @@ class EventService {
     switch (event) {
       case "VERIFICATION_PURCHASE_TICKETS_EVENT":
         const verified = await this.verificationPurchaseTicketsEvent(data);
-      let payloadSend;
-        console.log(`Verified`,  verified.statusCode);
+        let payloadSend;
+        console.log(`Verified`, verified.statusCode);
         if (verified.statusCode >= 200 && verified.statusCode < 300) {
-           payloadSend = {
-            data: {tickets: verified.data, user: data.user},
-            event: "PURCHASE_TICKET_CONFIRMED",
-          }
-        //  PublishMessage(this.channel, TICKET_SERVICE, JSON.stringify(payload));
-        }
-        else {
           payloadSend = {
-           data: { tickets: verified.data, user: data.user },
-           event: "PURCHASE_TICKET_FAILED",
-         };
+            data: { tickets: verified.data, user: data.user },
+            event: "PURCHASE_TICKET_CONFIRMED",
+          };
+          //  PublishMessage(this.channel, TICKET_SERVICE, JSON.stringify(payload));
+        } else {
+          payloadSend = {
+            data: { tickets: verified.data, user: data.user },
+            event: "PURCHASE_TICKET_FAILED",
+          };
         }
         PublishMessage(
           this.channel,

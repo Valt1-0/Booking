@@ -20,7 +20,7 @@ module.exports = async (app) => {
     // #swagger.description = 'Get Event by id.'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
 
-    const event = await service.getEvent(req.params);
+    const event = await service.getEvent(req.query);
     res.status(event.statusCode).json(event.data);
   });
   app.post("/create", async (req, res) => {
@@ -31,17 +31,17 @@ module.exports = async (app) => {
     const createEvent = await service.createEvent(req.body);
     res.status(createEvent.statusCode).json(createEvent.data);
   });
-  app.put("/update", (req, res) => {
+  app.put("/update", async (req, res) => {
     // #swagger.tags = ['Events']
     // #swagger.description = 'Update Event'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
     // #swagger.requestBody = {required: true,content: {"application/json": {schema: {$ref: "#/components/schemas/events"}  }}}
 
     const eventInputs = {
-      eventId: req.params.eventId,
+      eventId: req.query?.eventId,
       eventData: req.body,
     };
-    const updateEvent = service.updateEvent(eventInputs);
+    const updateEvent = await service.updateEvent(eventInputs);
     res.status(updateEvent.statusCode).json(updateEvent.data);
   });
 
@@ -49,8 +49,8 @@ module.exports = async (app) => {
     // #swagger.tags = ['Events']
     // #swagger.description = 'Delete Event by id.'
     // #swagger.parameters['eventId'] = { description: 'Event Id' }
-
-    const { eventId } = req.params;
+    console.log(req.query);
+    const { eventId } = req.query;
     const deleteEvent = await service.deleteEvent(eventId);
     res.status(deleteEvent.statusCode).json(deleteEvent.data);
   });
