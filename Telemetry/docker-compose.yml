@@ -13,56 +13,56 @@ services:
     networks:
       - telemetry
 
-  # tickets-db:
-  #   build:
-  #     context: ../Tickets/.
-  #     dockerfile: ../Tickets/Dockerfile-mongodb
-  #   container_name: tickets-db
-  #   restart: always
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   ports:
-  #     - 27018:27018
-  #   command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
-  #   healthcheck:
-  #     test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
-  #     interval: 5s
-  #     timeout: 15s
-  #     start_period: 15s
-  #     retries: 10
-  #   volumes:
-  #     - data:/data/db
-  #   networks:
-  #     - telemetry
+  tickets-db:
+    build:
+      context: ../Tickets/.
+      dockerfile: ../Tickets/Dockerfile-mongodb
+    container_name: tickets-db
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27018:27018
+    command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+      interval: 5s
+      timeout: 15s
+      start_period: 15s
+      retries: 10
+    volumes:
+      - data:/data/db
+    networks:
+      - telemetry
 
-  # events-db:
-  #   image: mongo:latest
-  #   container_name: events-db
-  #   restart: always
-  #   ports:
-  #     - "27019:27019"
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   volumes:
-  #     - ./data/events:/data/db
-  #   networks:
-  #     - telemetry
+  events-db:
+    image: mongo:latest
+    container_name: events-db
+    restart: always
+    ports:
+      - "27019:27019"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/events:/data/db
+    networks:
+      - telemetry
 
-  # auth-db:
-  #   image: mongo:latest
-  #   container_name: auth-db
-  #   restart: always
-  #   ports:
-  #     - "27020:27020"
-  #   environment:
-  #     MONGO_INITDB_ROOT_USERNAME: root
-  #     MONGO_INITDB_ROOT_PASSWORD: example
-  #   volumes:
-  #     - ./data/auth:/data/db
-  #   networks:
-  #     - telemetry
+  auth-db:
+    image: mongo:latest
+    container_name: auth-db
+    restart: always
+    ports:
+      - "27020:27020"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./data/auth:/data/db
+    networks:
+      - telemetry
 
 
   users1:
@@ -97,101 +97,101 @@ services:
     networks:
       - telemetry
 
-  # tickets1:
-  #   image: tickets
-  #   build:
-  #     context: ../Tickets/.
-  #   container_name: tickets1
-  #   restart: always
-  #   ports:
-  #     - "3004:3004"
-  #   env_file:
-  #     - ../Tickets/.env
-  #   depends_on:
-  #     - tickets-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  tickets1:
+    image: tickets
+    build:
+      context: ../Tickets/.
+    container_name: tickets1
+    restart: always
+    ports:
+      - "3004:3004"
+    env_file:
+      - ../Tickets/.env
+    depends_on:
+      - tickets-db
+      - rabbitmq
+    networks:
+      - telemetry
 
-  # tickets2:
-  #   image: tickets
-  #   build:
-  #     context: ../Tickets/.
-  #   container_name: tickets2
-  #   restart: always
-  #   ports:
-  #     - "4004:3004"
-  #   env_file:
-  #     - ../Tickets/.env
-  #   depends_on:
-  #     - tickets-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  tickets2:
+    image: tickets
+    build:
+      context: ../Tickets/.
+    container_name: tickets2
+    restart: always
+    ports:
+      - "4004:3004"
+    env_file:
+      - ../Tickets/.env
+    depends_on:
+      - tickets-db
+      - rabbitmq
+    networks:
+      - telemetry
 
-  # events1:
-  #   image: events
-  #   build:
-  #     context: ../Events/.
-  #   container_name: events1
-  #   restart: always
-  #   ports:
-  #     - "3001:3001"
-  #   env_file:
-  #     - ../Events/.env
-  #   depends_on:
-  #     - events-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  events1:
+    image: events
+    build:
+      context: ../Events/.
+    container_name: events1
+    restart: always
+    ports:
+      - "3001:3001"
+    env_file:
+      - ../Events/.env
+    depends_on:
+      - events-db
+      - rabbitmq
+    networks:
+      - telemetry
 
-  # events2:
-  #   image: events
-  #   build:
-  #     context: ../Events/.
-  #   container_name: events2
-  #   restart: always
-  #   ports:
-  #     - "4001:3001"
-  #   env_file:
-  #     - ../Events/.env
-  #   depends_on:
-  #     - events-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  events2:
+    image: events
+    build:
+      context: ../Events/.
+    container_name: events2
+    restart: always
+    ports:
+      - "4001:3001"
+    env_file:
+      - ../Events/.env
+    depends_on:
+      - events-db
+      - rabbitmq
+    networks:
+      - telemetry
 
-  # auth1:
-  #   image: auth
-  #   build:
-  #     context: ../Auth/.
-  #   container_name: auth1
-  #   restart: always
-  #   ports:
-  #     - "3003:3003"
-  #   env_file:
-  #     - ../Auth/.env
-  #   depends_on:
-  #     - auth-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  auth1:
+    image: auth
+    build:
+      context: ../Auth/.
+    container_name: auth1
+    restart: always
+    ports:
+      - "3003:3003"
+    env_file:
+      - ../Auth/.env
+    depends_on:
+      - auth-db
+      - rabbitmq
+    networks:
+      - telemetry
 
-  # auth2:
-  #   image: auth
-  #   build:
-  #     context: ../Auth/.
-  #   container_name: auth2
-  #   restart: always
-  #   ports:
-  #     - "4003:3003"
-  #   env_file:
-  #     - ../Auth/.env
-  #   depends_on:
-  #     - auth-db
-  #     - rabbitmq
-  #   networks:
-  #     - telemetry
+  auth2:
+    image: auth
+    build:
+      context: ../Auth/.
+    container_name: auth2
+    restart: always
+    ports:
+      - "4003:3003"
+    env_file:
+      - ../Auth/.env
+    depends_on:
+      - auth-db
+      - rabbitmq
+    networks:
+      - telemetry
 
 
   nginx-gateway:
@@ -204,13 +204,30 @@ services:
     depends_on:
       - users1
       - users2
-      # - tickets
-      # - events
-      # - auth
-      # - notification
+      - tickets1
+      - tickets2
+      - events1
+      - events2
+      - auth1
+      - auth2
+      - notification
     networks:
       - telemetry
 
+  notification:
+    image: notification
+    build:
+      context: ../Notification/.
+    container_name: notification
+    restart: always
+    ports:
+      - "3005:3005"
+    env_file:
+      - ../Notification/.env
+    depends_on:
+      - rabbitmq
+    networks:
+      - telemetry
 
   rabbitmq:
     image: rabbitmq:latest
