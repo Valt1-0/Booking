@@ -19,25 +19,25 @@ describe("Tickets", () => {
     expect(response.body).toBeDefined();
   });
 
+  it("should create a new ticket", async () => {
+    const ticket = {
+      eventId: "65fca71f3f3cbbfa3356ca6e",
+      userId: "65fca71c6ea83399be7ef26a",
+      quantity: 4,
+    };
+
+    const response = await request(app).post("/").send(ticket).expect(200);
+
+    ticketId = response.body._id;
+
+    console.log("eventId:", ticketId);
+
+    expect(response.body).toBeDefined();
+    // Add further assertions based on what your API should return
+  });
+
   // it("should get an event by eventId", async () => {
   //   const response = await request(app).get(`/${ticketId}`).expect(200);
-  //   expect(response.body).toBeDefined();
-  //   // Add further assertions based on what your API should return
-  // });
-
-  // it("should create a new ticket", async () => {
-  //   const ticket = {
-  //     eventId: "65fca71f3f3cbbfa3356ca6e",
-  //     userId: "65fca71c6ea83399be7ef26a",
-  //     quantity: 4,
-  //   };
-
-  //   const response = await request(app).post("/").send(ticket).expect(200);
-
-  //   ticketId = response.body._id;
-
-  //   console.log("eventId:", ticketId);
-
   //   expect(response.body).toBeDefined();
   //   // Add further assertions based on what your API should return
   // });
