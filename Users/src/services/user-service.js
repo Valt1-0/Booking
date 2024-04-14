@@ -61,21 +61,27 @@ class UserService {
     const { firstname, lastname, email, phone, userId, user } = userInputs;
     if (!userId)
       return FormateData({ msg: "Please provide an userId.", statusCode: 400 });
-   try {
-     const updatedUser = await User.findByIdAndUpdate(
-       { _id: userId },
-       { firstname, lastname, email, phone },
-       { new: true }
-     );
 
-     if (!updatedUser)
-       return FormateData({ msg: "User not found", statusCode: 404 });
+      // if (user.id !== userId && user.role !== "admin" && user.role !== "organizer")
+      //   return FormateData({
+      //     msg: "You are not authorized to update this user",
+      //     statusCode: 401,
+      //   });
+        try {
+          const updatedUser = await User.findByIdAndUpdate(
+            { _id: userId },
+            { firstname, lastname, email, phone },
+            { new: true }
+          );
 
-     return FormateData({ data: updatedUser });
-   } catch (error) {
-     console.error("Error in updateUser:", error);
-     return FormateData({ msg: "Internal Server Error", statusCode: 500 });
-   }
+          if (!updatedUser)
+            return FormateData({ msg: "User not found", statusCode: 404 });
+
+          return FormateData({ data: updatedUser });
+        } catch (error) {
+          console.error("Error in updateUser:", error);
+          return FormateData({ msg: "Internal Server Error", statusCode: 500 });
+        }
   };
 
   deleteUser = async (userInputs) => {

@@ -45,7 +45,7 @@ describe("User", () => {
       lastname: "User",
       email: "test@example.com",
       password: "Password123!",
-      phone: "1234567890",
+      phone: "1234567890"
     };
 
     const response = await request(app)
