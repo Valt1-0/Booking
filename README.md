@@ -50,9 +50,55 @@ USER_SERVICE_QUEUE='user_service'
 NOTIFICATION_SERVICE_QUEUE='notification_service'
 TICKET_SERVICE_QUEUE='ticket_service'
 EVENT_SERVICE_QUEUE='event_service'
-
 ```
 
 ## Tests
 
-To run the tests, use the command `npm run test` in the folder of the microservices you want to tes.
+To run the tests, use the command `npm run test` in the folder of the microservices you want to test.
+
+
+## Swagger
+
+The Swagger documentation is auto-generated.
+
+To generate the JSON file, go in **Swagger** folder, run first : `npm install` and after, run : `npm run start`
+
+## Containers
+
+
+### Monitoring
+
+- **Prometheus**: A monitoring system and time-series database that collects metrics from specified targets at given intervals, evaluates rule expressions, and can trigger alerts if some condition is observed to be true. Accessible at [Prometheus](localhost:9090).
+- **Grafana**: An open-source platform for monitoring and observability that allows you to query, visualize, alert on, and understand your metrics no matter where they are stored. Accessible at [Grafana](localhost:3000).
+- **Jaeger**: An open-source, end-to-end distributed tracing system that helps developers monitor and troubleshoot complex, microservices-based architectures. Accessible at [Jaeger](localhost:16686).
+- **OTEL Collector**: The OpenTelemetry Collector offers a vendor-agnostic implementation on how to receive, process, and export telemetry data. It removes the need to run, operate, and maintain multiple agents/collectors.
+- **MongoDB Exporter**: A Prometheus exporter for MongoDB metrics. It exports MongoDB metrics for Prometheus consumption.
+- **CAdvisor**: An open-source container resource usage and performance analysis agent. It is developed by Google and provides container users an understanding of the resource usage and performance characteristics of their running containers.
+
+### Gateway
+
+- **Nginx Gateway**: A high-performance HTTP server for load balancing and API Gateway. Accessible at localhost:80.
+
+### APIs
+
+- **users1**: A microservice for managing user-related operations. Accessible for request at localhost:3002.
+- **users2**: Another microservice for managing user-related operations. Accessible for request at localhost:4002.
+- **tickets1**: A microservice for managing ticket-related operations. Accessible for request at localhost:3004.
+- **tickets2**: Another microservice for managing ticket-related operations. Accessible for request at localhost:4004.
+- **events1**: A microservice for managing event-related operations. Accessible for request at localhost:3001.
+- **events2**: Another microservice for managing event-related operations. Accessible for request at localhost:4001.
+- **auth1**: A microservice for managing authentication operations. Accessible for request at localhost:3003.
+- **auth2**: Another microservice for managing authentication operations. Accessible for request at localhost:4003.
+- **notification**: A microservice for managing notification operations. Accessible for request at localhost:3005.
+
+## Databases
+
+- **Users-db**: A database for storing user-related data.
+- **Tickets-db**: A database for storing ticket-related data.
+- **Events-db**: A database for storing event-related data.
+- **Auth-db**: A database for storing authentication-related data.
+
+## Queue
+
+- **Rabbitmq**: A message-queueing software also known as a message broker or queue manager. It is designed to exchange data by way of a mechanism known as message queuing.
+
