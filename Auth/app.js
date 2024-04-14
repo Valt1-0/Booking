@@ -1,9 +1,7 @@
-require("dotenv").config();
+const { API_PORT } = require("./src/config");
 require("./src/db/mongoConnect").connect();
 const express = require("express");
 //Get port in .env file
-const { PORT } = require('./src/config');
-
 
 const authRoute = require("./src/routes/authRoutes");
 
@@ -17,11 +15,9 @@ app.use(bodyParser.json({ type: "application/json" }));
 
 authRoute(app);
 
-
-
 // Server listening
-app.listen(PORT, () => {
-  console.log(`Server Auth running on port ${PORT}`);
+app.listen(API_PORT, () => {
+  console.log(`Server Auth running on port ${API_PORT}`);
 });
 
 module.exports = app;

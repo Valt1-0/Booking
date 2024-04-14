@@ -7,9 +7,11 @@ console.log(MONGODB_URI);
 
 exports.connect = async () => {
   await mongoose
-    .connect(MONGO_URI)
+    .connect(MONGODB_URI)
     .then(() => {
-      console.log("Successfully connected to database " + mongoose.connection.name);
+      console.log(
+        "Successfully connected to database " + mongoose.connection.name
+      );
     })
     .catch((error) => {
       console.log("database connection failed. exiting now...");

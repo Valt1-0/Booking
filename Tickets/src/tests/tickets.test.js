@@ -2,73 +2,121 @@ const request = require("supertest");
 const startServer = require("../../app"); // Replace with the correct path to your Express app file
 const mongoose = require("mongoose");
 const { CreateChannel } = require("../utils");
+const assert = require("assert");
+
+let tickets = "";
 let ticketId = "";
+let user = "";
+let eventId = "";
+let token = "";
+
+async function Authenticate(email, password) {
+  const response = await fetch("http://127.0.0.1:3003/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+async function getAllEvents() {
+  const response = await fetch("http://127.0.0.1:3001/");
+
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  const data = await response.json();
+  return data;
+}
+
+async function getFirstEvent() {
+  const events = await getAllEvents();
+  return events[0];
+}
 
 describe("Tickets", () => {
   let app;
 
-  beforeAll(async () => {
-    app = await startServer(); // Start the Express server before running tests
-    // Attendre que la connexion à MongoDB soit établie
+  before(async () => {
+    app = await startServer();
     await new Promise((resolve) => mongoose.connection.once("open", resolve));
-    await CreateChannel();
+    const auth = await Authenticate("dimcorb@gmail.com", "Test1234!");
+    if (!auth) throw new Error("Authentication failed");
+    user = auth.userInfo;
+    token = auth.token;
+
+    const event = await getFirstEvent();
+    if (!event) throw new Error("No event found");
+    eventId = event._id;
   });
 
   it("should get all tickets", async () => {
     const response = await request(app).get("/").expect(200);
-    expect(response.body).toBeDefined();
+    assert(response.body);
   });
 
   it("should create a new ticket", async () => {
     const ticket = {
-      eventId: "65fca71f3f3cbbfa3356ca6e",
-      userId: "65fca71c6ea83399be7ef26a",
-      quantity: 4,
+      eventId: eventId,
+      userId: user.id,
+      quantity: 2,
+      price: 10,
     };
 
-    const response = await request(app).post("/").send(ticket).expect(200);
+    const response = await request(app)
+      .post("/create")
+      .set("Authorization", `Bearer ${token}`)
+      .send(ticket)
+      .expect(200);
 
-    ticketId = response.body._id;
+    tickets = response.body.ticketInfo[0];
 
-    console.log("eventId:", ticketId);
+    ticketId = response.body.ticketInfo[0]._id;
 
-    expect(response.body).toBeDefined();
-    // Add further assertions based on what your API should return
+    assert(response.body);
   });
 
-  // it("should get an event by eventId", async () => {
-  //   const response = await request(app).get(`/${ticketId}`).expect(200);
-  //   expect(response.body).toBeDefined();
-  //   // Add further assertions based on what your API should return
-  // });
+  it("should get ticket by id", async () => {
+    const response = await request(app)
+      .get(`/getById`)
+      .query({ ticketId: ticketId })
+      .expect(200);
+    assert(response.body);
+  });
 
-  // it("should update an event by eventId", async () => {
-  //   const updatedEvent = {
-  //     eventId,
-  //     userId,
-  //     quantity,
-  //     price,
-  //     purchaseDate,
-  //     status,
-  //   };
+  it("should update ticket", async () => {
+    const updatedTicket = {
+      eventId: eventId,
+      quantity: 2,
+      price: 10,
+      purchaseDate: tickets.purchaseDate,
+    };
 
-  //   const response = await request(app)
-  //     .put(`/?eventId=${ticketId}`)
-  //     .send(updatedEvent)
-  //     .expect(200);
+    const response = await request(app)
+      .put(`/update`)
+      .set("Authorization", `Bearer ${token}`)
+      .query({ ticketId: ticketId })
+      .send(updatedTicket)
+      .expect(200);
 
-  //   expect(response.body).toBeDefined();
-  //   // Add further assertions based on what your API should return
-  // });
+    assert(response.body);
+  });
 
-  // it("should delete an event by eventId", async () => {
-  //   const response = await request(app)
-  //     .delete(`/?eventId=${eventId}`)
-  //     .expect(200);
-
-  //   console.log(eventId);
-
-  //   expect(response.body).toBeDefined();
-  //   // Add further assertions based on what your API should return
-  // });
+  it("should delete a ticket by id", async () => {
+    const response = await request(app)
+      .delete(`/delete`)
+      .set("Authorization", `Bearer ${token}`)
+      .query({ ticketId: ticketId })
+      .expect(200);
+    assert(response.body);
+  });
 });
