@@ -5,8 +5,8 @@ require("./src/db/mongoConnect").connect();
 const { init } = require("./src/instrumentation");
 const { tracer } = init("Tickets");
 
-// const span = tracer.startSpan("my-test-span");
-// span.end();
+const span = tracer.startSpan("my-test-span");
+span.end();
 const express = require("express");
 const ticketRoute = require("./src/routes/ticketRoutes");
 
