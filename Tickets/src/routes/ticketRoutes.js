@@ -12,14 +12,12 @@ module.exports = async (app) => {
   app.get("/", async (req, res) => {
     // #swagger.tags = ['Tickets']
     // #swagger.description = 'Get all tickets.'
-
     const allTickets = await service.getAllTickets();
     res.status(allTickets.statusCode).json(allTickets.data);
   });
   app.get("/getById", async (req, res) => {
     // #swagger.tags = ['Tickets']
-    // #swagger.description = 'Get tickets by id.
-
+    // #swagger.description = 'Get tickets by id.'
     const { ticketId } = req.query;
     console.log(ticketId);
 
@@ -48,7 +46,9 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.put("/update", async (req, res) => {
+  app.put("/update", isAuth, async (req, res) => {
+    // #swagger.tags = ['Tickets']
+    // #swagger.description = 'Update a ticket.'
 
     const ticketInput = {
       ...req.body,
@@ -73,7 +73,9 @@ module.exports = async (app) => {
     res.status(ticket.statusCode).json({ ticketInfo: ticket.data });
   });
 
-  app.delete("/delete", async (req, res) => {
+  app.delete("/delete", isAuth, async (req, res) => {
+    // #swagger.tags = ['Tickets']
+    // #swagger.description = 'Delete a ticket.'
 
     const ticketInput = {
       ticketId: req.query.ticketId,
