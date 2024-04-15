@@ -2,9 +2,13 @@ global:
   scrape_interval: 5s
 
 scrape_configs:
-  - job_name: "users"
+  - job_name: "users1"
     static_configs:
-      - targets: ["users:3002"]
+      - targets: ["users1:3002"]
+
+  - job_name: "users2"
+    static_configs:
+      - targets: ["users2:4002"]
 
   - job_name: "cadvisor"
     static_configs:
