@@ -8,22 +8,22 @@ const endpointsFiles = [
   {
     name: "users",
     path: "../Users/src/routes/userRoutes.js",
-    envPath: "../Users/.env.dev",
+    envPath: "../Users/.env",
   },
   {
     name: "auth",
     path: "../Auth/src/routes/authRoutes.js",
-    envPath: "../Auth/.env.dev",
+    envPath: "../Auth/.env",
   },
   {
     name: "events",
     path: "../Events/src/routes/eventRoutes.js",
-    envPath: "../Events/.env.dev",
+    envPath: "../Events/.env",
   },
   {
     name: "tickets",
     path: "../Tickets/src/routes/ticketRoutes.js",
-    envPath: "../Tickets/.env.dev",
+    envPath: "../Tickets/.env",
   },
 ];
 

@@ -48,7 +48,6 @@ module.exports.PublishMessage = (channel, service, msg) => {
 module.exports.SubscribeMessage = async (channel, service) => {
   await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
   const q = await channel.assertQueue(NOTIFICATION_SERVICE, {
-    exclusive: true,
     durable: true,
   });
   console.log(` Waiting for messages in queue: ${q.queue}`);

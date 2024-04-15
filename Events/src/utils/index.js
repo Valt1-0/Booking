@@ -44,7 +44,6 @@ module.exports.ValidateSignature = async (req) => {
 
 module.exports.CreateChannel = async () => {
   try {
-    console.log("create");
     const connection = await amqplib.connect(MSG_QUEUE_URL);
     const channel = await connection.createChannel();
     await channel.assertQueue(EXCHANGE_NAME, "direct", { durable: true });
@@ -63,7 +62,9 @@ module.exports.PublishMessage = (channel, service, msg) => {
 
 module.exports.SubscribeMessage = async (channel, service) => {
   await channel.assertExchange(EXCHANGE_NAME, "direct", { durable: true });
-  const q = await channel.assertQueue(EVENT_SERVICE, { durable: true });
+  const q = await channel.assertQueue(EVENT_SERVICE, {
+    durable: true,
+  });
   console.log(` Waiting for messages in queue: ${q.queue}`);
 
   channel.bindQueue(q.queue, EXCHANGE_NAME, EVENT_SERVICE);

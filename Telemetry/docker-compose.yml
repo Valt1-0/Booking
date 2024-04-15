@@ -26,7 +26,7 @@ services:
       - 27018:27018
     command: --replSet rs0 --keyFile /etc/mongo-keyfile --bind_ip_all --port 27018
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27018'}]}) }" | mongosh --port 27018 -u root -p root --authenticationDatabase admin > /dev/null
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'tickets-db:27018'}]}) }" | mongosh --port 27018 -u root -p example --authenticationDatabase admin > /dev/null
       interval: 5s
       timeout: 15s
       start_period: 15s
@@ -41,7 +41,7 @@ services:
     container_name: events-db
     restart: always
     ports:
-      - "27019:27019"
+      - "27019:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -55,7 +55,7 @@ services:
     container_name: auth-db
     restart: always
     ports:
-      - "27020:27020"
+      - "27020:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
@@ -316,7 +316,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
-      - ./prometheus:/etc/prometheus
+      - ./prometheus:/etc/prometheusification
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
     ports:
