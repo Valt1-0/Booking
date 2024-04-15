@@ -1,4 +1,9 @@
 const fs = require("fs");
+
+if (!fs.existsSync("./doc")) {
+  fs.mkdirSync("./doc");
+}
+
 const swaggerAutogen = require("swagger-autogen")({
   openapi: "3.0.0",
   autoHeaders: false,
