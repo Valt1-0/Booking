@@ -272,19 +272,14 @@ services:
     networks:
       - telemetry
 
-
   swagger:
     image: swagger
+    build:
+      context: ../Swagger/.
     container_name: swagger
     restart: always
     ports:
       - "4000:4000"
-    depends_on:
-      - users1
-      - users2
-      # - tickets
-      # - events
-      # - auth
     networks:
       - telemetry
 
@@ -305,7 +300,17 @@ services:
     depends_on:
       - users1
       - users2
+      - tickets1
+      - tickets2
+      - events1
+      - events2
+      - auth1
+      - auth2
+      - notification
       - users-db
+      - tickets-db
+      - events-db
+      - auth-db
     networks:
       - telemetry
 
