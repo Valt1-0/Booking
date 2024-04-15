@@ -1,6 +1,6 @@
 services:
   users-db:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: users-db
     restart: always
     ports:
@@ -9,7 +9,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - ./data/users:/data/db
+      - users-data-db:/data/db
     networks:
       - telemetry
 
@@ -32,12 +32,12 @@ services:
       start_period: 15s
       retries: 10
     volumes:
-      - data:/data/db
+      - tickets-data-db:/data/db
     networks:
       - telemetry
 
   events-db:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: events-db
     restart: always
     ports:
@@ -46,12 +46,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - ./data/events:/data/db
+      - events-data-db:/data/db
     networks:
       - telemetry
 
   auth-db:
-    image: mongo:latest
+    image: mongo:7.0
     container_name: auth-db
     restart: always
     ports:
@@ -60,7 +60,7 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
-      - ./data/auth:/data/db
+      - auth-data-db:/data/db
     networks:
       - telemetry
 
@@ -358,4 +358,7 @@ networks:
   telemetry:
 
 volumes:
-  data: {}
+  users-data-db: {}
+  events-data-db: {}
+  tickets-data-db: {}
+  auth-data-db: {}
