@@ -1,5 +1,0 @@
-{
-  "dependencies": {
-    "@opentelemetry/sdk-trace-base": "^1.23.0"
-  }
-}
