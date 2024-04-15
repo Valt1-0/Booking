@@ -1,4 +1,4 @@
 **/node_modules/
 data/
 .vscode
-Swagger/doc
+Swagger/doc/*
