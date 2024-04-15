@@ -230,7 +230,7 @@ services:
       - telemetry
 
   rabbitmq:
-    image: rabbitmq:latest
+    image: rabbitmq:3.13.1-management
     container_name: rabbitmq
     ports:
       - 5672:5672    #amqp
