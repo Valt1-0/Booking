@@ -7,7 +7,8 @@ Your SaaS system should be able to handle that workload and be optimized as best
 
 ## Requirement
 
-Docker
+- Docker
+- NodeJS
 
 ## Microservices
 
@@ -24,6 +25,9 @@ Docker
 First, we need to generate the json swagger files
 The Swagger documentation is auto-generated.
 
+- Clone the repository : `git clone https://github.com/Valt1-0/Booking.git`
+- Navigate to the project directory : `cd Booking`
+
 To generate the JSON files, go in **Swagger** folder, run first : `npm install` and after, run : `npm run start`
 
 Available on [Swagger](localhost:4000), when docker compose is up 👍
@@ -31,10 +35,8 @@ Available on [Swagger](localhost:4000), when docker compose is up 👍
 
 To install the Booking system, follow these steps:
 
-- Clone the repository: `git clone https://github.com/Valt1-0/Booking.git`
-- Navigate to the project directory: `cd Booking`
 - Go to Telemetry folder : `cd Telemetry`
-- Setup the Docker compose : `docker compose . -d`
+- Setup the Docker compose : `docker compose up -d`
 - Configure environment variables as needed in .env of each Microservices.
 
 
