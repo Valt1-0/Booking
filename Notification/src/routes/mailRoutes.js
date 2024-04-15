@@ -6,7 +6,7 @@ module.exports = async (app) => {
   const service = new NotificationService();
 
   SubscribeMessage(channel, service);
-  
+
   app.post("/mail", async (req, res) => {
     const mail = await service.sendMail;
     res.status(mail.statusCode).json(mail.data);

@@ -21,6 +21,14 @@ Docker
 
 ## Installation
 
+First, we need to generate the json swagger files
+The Swagger documentation is auto-generated.
+
+To generate the JSON files, go in **Swagger** folder, run first : `npm install` and after, run : `npm run start`
+
+Available on [Swagger](localhost:4000), when docker compose is up 👍
+
+
 To install the Booking system, follow these steps:
 
 - Clone the repository: `git clone https://github.com/Valt1-0/Booking.git`
@@ -28,6 +36,8 @@ To install the Booking system, follow these steps:
 - Go to Telemetry folder : `cd Telemetry`
 - Setup the Docker compose : `docker compose . -d`
 - Configure environment variables as needed in .env of each Microservices.
+
+
 
 ## Environment Variables
 
@@ -55,15 +65,6 @@ EVENT_SERVICE_QUEUE='event_service'
 ## Tests
 
 To run the tests, use the command `npm run test` in the folder of the microservices you want to test.
-
-
-## Swagger
-
-The Swagger documentation is auto-generated.
-
-To generate the JSON file, go in **Swagger** folder, run first : `npm install` and after, run : `npm run start`
-
-Available on [Swagger](localhost:4000), when docker compose is up 👍
 
 ## Containers
 
